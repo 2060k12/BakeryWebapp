@@ -1,5 +1,4 @@
 import Image from "next/image";
-import PhotoView from "../components/PhotoView";
 
 export default function Page() {
   return (
@@ -8,7 +7,7 @@ export default function Page() {
         {/*  hero banner with images */}
         <Image
           alt="Image for banner"
-          src={"/images/ad.jpg"}
+          src={"/images/ad1.jpg"}
           width={768}
           height={400}
           className="rounded-3xl aspect-video "
