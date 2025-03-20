@@ -1,6 +1,27 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import toast from "react-hot-toast";
+
 const CreateYourOwn = () => {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Handle File Upload
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+  });
+
   const [formData, setFormData] = useState({
     cakeName: "",
     message: "",
@@ -14,7 +35,13 @@ const CreateYourOwn = () => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    console.log(imagePreview);
+    if (!imagePreview) {
+      toast.error("Upload a reference first");
+      e.preventDefault();
+      return;
+    }
+
     console.log("Form Submitted:", formData);
     alert("Cake order submitted successfully!");
   };
@@ -22,12 +49,28 @@ const CreateYourOwn = () => {
   return (
     <div className="grid grid-cols-4">
       {/* Cake Reference Section */}
-      <section className="flex flex-col col-span-2 hover:cursor-pointer">
-        <div className="bg-gray-200 rounded-xl w-90 aspect-square flex justify-center items-center">
-          <div className="flex-col">
-            <IoCloudUploadOutline className="text-4xl m-auto" />
-            <span className="image">Upload Cake Reference </span>
-          </div>
+      <section className="flex flex-col col-span-2">
+        <div
+          {...getRootProps()}
+          className="bg-gray-200 rounded-xl w-90 aspect-square flex items-center justify-center cursor-pointer border-2 border-dashed border-gray-400 hover:bg-gray-300 transition"
+        >
+          <input {...getInputProps()} />
+          {imagePreview ? (
+            <Image
+              src={imagePreview}
+              alt="Cake Reference"
+              height={200}
+              width={200}
+              className="w-full h-full object-cover rounded-xl"
+            />
+          ) : (
+            <div className="flex flex-col items-center">
+              <IoCloudUploadOutline className="text-4xl text-gray-600" />
+              <span className="text-gray-600 text-sm">
+                Upload Cake Reference
+              </span>
+            </div>
+          )}
         </div>
       </section>
 
