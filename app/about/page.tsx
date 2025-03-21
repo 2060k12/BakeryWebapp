@@ -1,7 +1,7 @@
 export default function Page() {
   return (
     <>
-      <div className="flex place-content-between px-44">
+      <div className="flex place-content-between px-44 py-16">
         <div>
           <h3 className="font-bold text-3xl">Contact Info</h3>
           <div className="text-xl">
