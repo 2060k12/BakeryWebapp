@@ -2,9 +2,24 @@ import React from "react";
 import { IoMdCart } from "react-icons/io";
 import Link from "next/link";
 
+interface NavItemProps {
+  href: string;
+  label: string;
+  children?: React.ReactNode; // Allow children
+}
+
+const NavItems: React.FC<NavItemProps> = ({ href, label, children }) => {
+  return (
+    <a href={href} className="flex items-center space-x-2 hover:text-gray-400">
+      {children}
+      <span>{label}</span>
+    </a>
+  );
+};
+
 const NavBar = () => {
   return (
-    <nav className="flex items-center place-content-between px-16 py-8">
+    <nav className="flex items-center place-content-between px-0 py-8">
       <div className="flex items-center  ">
         <h1 className="text-4xl">Hamro</h1>
         <h1 className="text-4xl font-bold text-green-400">Karasabari</h1>
@@ -15,9 +30,9 @@ const NavBar = () => {
         <NavItem href="/about" label="About" />
         <NavItem href="/explore" label="Explore" />
         <NavItem href="/search" label="Search" />
-        <div className="pl-5">
-          <IoMdCart size={24} className="cursor-pointer hover:text-gray-400" />
-        </div>
+        <NavItems href="/cart" label="">
+          <IoMdCart size={24} className="cursor-pointer" />
+        </NavItems>
       </div>
     </nav>
   );
