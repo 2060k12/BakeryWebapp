@@ -123,7 +123,7 @@ const AdminUploadScreen = () => {
             type="submit"
             className="  text-green-400 font-bold text-2xl text-left  p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
           >
-            Submit Order
+            Upload
           </button>
         </form>
       </section>
