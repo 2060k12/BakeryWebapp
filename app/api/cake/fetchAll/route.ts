@@ -4,7 +4,7 @@ import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextResponse } from "next/server";
 import { IsNull } from "typeorm";
 
-export async function DELETE() {
+export async function GET() {
   try {
     // initializing data source
     await initializeDataSource();

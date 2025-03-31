@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { Cake } from "./models/CakeModel";
+import { BusinessDetail } from "./models/BusinessModel";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -9,7 +10,7 @@ export const AppDataSource = new DataSource({
   username: process.env.USERNAME,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
-  entities: [Cake],
+  entities: [Cake, BusinessDetail],
   synchronize: process.env.NODE_ENV === "production" ? false : true,
   ssl: { rejectUnauthorized: false },
   connectTimeoutMS: 10000, // Set timeout to 10 seconds
