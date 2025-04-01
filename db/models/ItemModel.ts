@@ -6,8 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
+import { Category } from "./CategoryModel";
 
 export enum DietaryOption {
   VEGAN = "VEGAN",
@@ -16,7 +18,7 @@ export enum DietaryOption {
 }
 
 @Entity()
-export class Cake {
+export class Item {
   @PrimaryGeneratedColumn("uuid")
   id: string = uuidv4();
 
@@ -30,11 +32,17 @@ export class Cake {
   })
   dietaryOption?: DietaryOption;
 
+  @Column()
+  price!: number;
+
   @Column({ nullable: true })
   description?: string;
 
   @Column({ nullable: true })
   message?: string;
+
+  @Column({ type: "bool" })
+  avaivable: boolean = true;
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createdAt!: Date;
@@ -45,6 +53,9 @@ export class Cake {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updatedAt!: Date;
+
+  @ManyToOne(() => Category, (category) => category.items)
+  category!: Category;
 
   @DeleteDateColumn()
   deletedAt!: Date | null;

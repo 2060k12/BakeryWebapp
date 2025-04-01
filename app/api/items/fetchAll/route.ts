@@ -1,5 +1,5 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
-import { Cake } from "@/db/models/CakeModel";
+import { Cake } from "@/db/models/ItemModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextResponse } from "next/server";
 import { IsNull } from "typeorm";

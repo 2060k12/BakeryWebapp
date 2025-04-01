@@ -1,5 +1,5 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
-import { Cake } from "@/db/models/CakeModel";
+import { Item } from "@/db/models/ItemModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,7 +17,7 @@ export async function DELETE(req: NextRequest) {
     // initializing data source
     await initializeDataSource();
 
-    const cakeRepository = AppDataSource.getRepository(Cake);
+    const cakeRepository = AppDataSource.getRepository(Item);
 
     // search for the cake in the database
     const searchedCake = await cakeRepository.findOne({ where: { id } });
