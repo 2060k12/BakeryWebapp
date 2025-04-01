@@ -6,18 +6,20 @@
 // import { NextRequest, NextResponse } from "next/server";
 // import { v4 as uuidv4 } from "uuid";
 
-// type ItemPayload = {
+// interface ItemPayload {
+//   id?: string;
 //   name: string;
 //   description?: string;
 //   message?: string;
 //   dietaryOption: DietaryOption;
-// };
+// }
 
 // type OrderPayload = {
 //   items: [ItemPayload];
 //   appliedPromo: string;
 //   deliveryDate: Date;
 //   proofOfPayment: string;
+//   deliveryAddress: string;
 // };
 
 // export async function POST(req: NextRequest) {
@@ -55,12 +57,11 @@
 
 //     // creating an instance of Orders
 //     const allItems: Item[] = [];
-//     for (let item in body.items) {
+//     for (let item: Item of body.items) {
 //       allItems.push({
 //         avaivable: true,
-//         price: 300,
-//         id: "",
 //         name: item.name,
+//         price: body.items,
 //       });
 //     }
 

@@ -1,5 +1,5 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
-import { Item } from "@/db/models/ItemModel";
+import { Category } from "@/db/models/CategoryModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextResponse } from "next/server";
 import { IsNull } from "typeorm";
@@ -9,18 +9,18 @@ export async function GET() {
     // initializing data source
     await initializeDataSource();
 
-    const cakeRepository = AppDataSource.getRepository(Item);
+    const repository = AppDataSource.getRepository(Category);
 
-    // search for the cake in the database
-    const cakes = await cakeRepository.find({
-      where: { deletedAt: IsNull() }, // Only fetch cakes that are not soft deleted
+    // search for the category in the database
+    const searched = await repository.find({
+      where: { deletedAt: IsNull() }, // Only fetch category that are not soft deleted
     });
 
-    if (!cakes)
-      throw new ApiError(StatusCode.BAD_REQUEST, {}, "Cake not found");
+    if (!searched)
+      throw new ApiError(StatusCode.BAD_REQUEST, {}, "Category not found");
 
     return NextResponse.json(
-      new ApiResponse(StatusCode.OK, { cakes }, "All Cakes Fetched ", true),
+      new ApiResponse(StatusCode.OK, { searched }, "All Cakes Fetched ", true),
       { status: StatusCode.OK }
     );
   } catch (error) {
