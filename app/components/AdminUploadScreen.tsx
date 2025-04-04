@@ -55,7 +55,7 @@ const AdminUploadScreen = () => {
       <section className="flex flex-col col-span-2">
         <div
           {...getRootProps()}
-          className="bg-gray-200 rounded-xl w-90 aspect-square flex items-center justify-center cursor-pointer border-2 border-dashed border-gray-400 hover:bg-gray-300 transition"
+          className="bg-gray-900 rounded-xl w-full h-full aspect-square flex items-center justify-center cursor-pointer border-2 border-dashed border-gray-400 hover:bg-gray-300 transition"
         >
           <input {...getInputProps()} />
           {imagePreview ? (
@@ -79,7 +79,7 @@ const AdminUploadScreen = () => {
       <section className="flex flex-col col-span-2">
         <form
           onSubmit={handleSubmit}
-          className="w-full mx-auto p-5 border rounded-xl shadow-lg space-y-4 bg-white"
+          className="w-full mx-auto h-full p-5 border rounded-xl shadow-lg space-y-4 bg-black border-gray-600"
         >
           <div>
             <input
@@ -88,7 +88,7 @@ const AdminUploadScreen = () => {
               placeholder="Item Name"
               value={formData.cakeName}
               onChange={handleChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -100,7 +100,7 @@ const AdminUploadScreen = () => {
               placeholder="Your message on the cake"
               value={formData.message}
               onChange={handleChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-3 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -113,7 +113,7 @@ const AdminUploadScreen = () => {
               placeholder="Description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full p-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               rows={2}
               required
             ></textarea>

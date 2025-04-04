@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Page() {
   return (
     <>
-      <div className="px-44 pt-18 pb-8">
+      <div className="md:px-44 px-8 pt-18 pb-8">
         <h1 className="font-bold text-3xl">About Us</h1>
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
@@ -21,9 +21,9 @@ export default function Page() {
         width={500}
         height={500}
         alt="banner"
-        className="aspect-video w-full h-80 px-44 object-cover"
+        className="aspect-video w-full h-80 md:px-44 px-8 object-cover"
       />
-      <div className="flex place-content-between px-44 py-16">
+      <div className="flex md:flex-row flex-col place-content-between md:px-44 px-8 py-8 md:py16">
         <div>
           <h3 className="font-bold text-3xl">Contact Info</h3>
           <div className="text-xl">
@@ -32,10 +32,10 @@ export default function Page() {
             <h4>iampranish@outlook.com</h4>
           </div>
         </div>
-
+        <hr className="border-gray-700 border-1 my-3 md:hidde" />
         <div>
           <h3 className="font-bold text-3xl ">We are available on</h3>
-          <div className="text-xl text-right font-bold">
+          <div className="text-xl md:text-right font-bold">
             <h4>Whatsapp</h4>
             <h4>facebook</h4>
             <h4>Instagram</h4>

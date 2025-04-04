@@ -49,15 +49,15 @@ const EachCartItem = () => {
     <div>
       <div className="grid grid-cols-6">
         <Image
-          className="col-span-1 rounded-xl h-25 w-25"
+          className="col-span-1 rounded-xl md:h-25 md:w-25   h-18 w-18"
           src={"/images/cake1.jpg"}
           height={200}
           width={200}
           alt="Cake"
         />
 
-        <div className="col-span-2">
-          <h3 className=" text-xl">Birthday Cake</h3>
+        <div className="col-span-2 md:px-0 px-2">
+          <h3 className=" md:text-xl text-lg">Birthday Cake</h3>
           <h3 className="font-bold">Cake</h3>
           <button className="text-gray-600 text-sm hover:cursor-pointer">
             Remove

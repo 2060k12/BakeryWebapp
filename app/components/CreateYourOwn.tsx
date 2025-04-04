@@ -52,7 +52,7 @@ const CreateYourOwn = () => {
       <section className="flex flex-col col-span-2">
         <div
           {...getRootProps()}
-          className="bg-gray-200 rounded-xl w-90 aspect-square flex items-center justify-center cursor-pointer border-2 border-dashed border-gray-400 hover:bg-gray-300 transition"
+          className="bg-gray-800 rounded-xl w-full h-full aspect-square flex items-center justify-center cursor-pointer border-2 border-dashed border-gray-400 hover:bg-gray-300 transition"
         >
           <input {...getInputProps()} />
           {imagePreview ? (
@@ -78,47 +78,48 @@ const CreateYourOwn = () => {
       <section className="flex flex-col col-span-2">
         <form
           onSubmit={handleSubmit}
-          className="w-full mx-auto p-5 border rounded-xl shadow-lg space-y-4 bg-white"
+          className="w-full mx-auto p-5 h-full rounded-xl shadow-lg space-y-4 bg-black border-2 border-gray-700 flex flex-col justify-between "
         >
-          <div>
-            <input
-              type="text"
-              name="cakeName"
-              placeholder="Give your cake name"
-              value={formData.cakeName}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
+          <div className="space-y-2">
+            <div>
+              <input
+                type="text"
+                name="cakeName"
+                placeholder="Give your cake name"
+                value={formData.cakeName}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-          <div>
-            <input
-              type="text"
-              name="message"
-              placeholder="Your message on the cake"
-              value={formData.message}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
+            <div>
+              <input
+                type="text"
+                name="message"
+                placeholder="Your message on the cake"
+                value={formData.message}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                required
+              />
+            </div>
 
-          <div>
-            <textarea
-              name="description"
-              placeholder="Describe any special requests or design preferences"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              rows={4}
-              required
-            ></textarea>
+            <div>
+              <textarea
+                name="description"
+                placeholder="Describe any special requests or design preferences"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full p-3 border  border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                rows={4}
+                required
+              ></textarea>
+            </div>
           </div>
-
           <button
             type="submit"
-            className="  text-green-400 font-bold text-2xl text-left  p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
+            className="  text-green-500 font-bold text-2xl text-left  p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
           >
             Submit Order
           </button>

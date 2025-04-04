@@ -11,7 +11,7 @@ const Search = () => {
   };
   return (
     <div className="my-16 justify-center mx-auto w-3/4 ">
-      <div className="flex justify-center gap-8 ">
+      <div className="flex justify-center gap-8 items-center ">
         {/* Search Text bar */}
         <input
           type="text"
@@ -21,7 +21,7 @@ const Search = () => {
           placeholder="Search Here"
         />
         {/* Filter Icon */}
-        <IoFilter className="text-5xl" />
+        <IoFilter className="md:text-5xl text-3xl text" />
       </div>
 
       <div>
@@ -29,7 +29,7 @@ const Search = () => {
         <h2 className="text-2xl mt-4 p-2 font-bold">Categories</h2>
 
         {/* All Options */}
-        <div className="flex">
+        <div className="flex flex-col md:flex-row ">
           <h2 className="text-xl  px-2 hover:cursor-pointer hover:underline">
             Anniversary
           </h2>

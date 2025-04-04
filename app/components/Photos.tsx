@@ -18,9 +18,9 @@ const Photos = () => {
   };
 
   return (
-    <div className="px-32 py-16">
+    <div className="xl:px-16 lg:px-16 md:px-8 px-2 py-4 md:py-16">
       {/* This is the explore page Feed */}
-      <div className="flex flex-wrap gap-6 my-12 justify-center ">
+      <div className="flex flex-wrap gap-6 my-2 md:my-12 justify-center ">
         <PhotoView
           image="/images/cake1.jpg"
           imageAlt="Sample Image"

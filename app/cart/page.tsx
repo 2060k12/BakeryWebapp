@@ -4,7 +4,7 @@ import EachCartItem from "../components/EachCartItem";
 const Cart = () => {
   return (
     <div>
-      <div className="grid grid-cols-6 gap-16">
+      <div className="md:grid md:grid-cols-6 gap-16 mx-4 md:mx-0">
         {/* Producs */}
         {/* Product 1 */}
         <div className="col-span-4 ">
@@ -18,7 +18,7 @@ const Cart = () => {
           </div>
 
           {/* Products*/}
-          <div className="flex-row space-y-4">
+          <div className="flex-row space-y-4 ">
             <EachCartItem />
             <EachCartItem />
             <EachCartItem />
@@ -27,7 +27,7 @@ const Cart = () => {
 
         {/* Order summary */}
 
-        <div className="col-span-2">
+        <div className="md:col-span-2 mt-8 md:mt:0 w-full">
           <div className="mb-4">
             {/* Header */}
             <div className="mb-8">

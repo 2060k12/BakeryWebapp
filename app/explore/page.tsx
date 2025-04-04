@@ -9,9 +9,9 @@ const Explore = () => {
   const [isSelected, setIsSelected] = useState("photos"); // Default state should match the initial UI
 
   return (
-    <div className="px-32 py-16">
+    <div className="md:px-32 px-8 py-8 md:py-16">
       {/* The navigation bar inside the explore page */}
-      <nav className="flex space-x-8 text-2xl">
+      <nav className="flex md:space-x-8 space-x-2 md:text-2xl text-lg">
         <button
           className={` hover:cursor-pointer ${
             isSelected === "photos" ? "underline" : ""

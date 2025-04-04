@@ -15,7 +15,7 @@ const Dropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute mt-2 w-48 bg-white border rounded-md shadow-lg">
+        <div className="absolute mt-2 w-48 bg-black border rounded-md shadow-lg">
           <button className="block w-full text-left px-4 py-2 hover:bg-gray-100">
             Vegeterian - Contains Eggs
           </button>
