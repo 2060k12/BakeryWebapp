@@ -6,7 +6,7 @@ import SocialMedia from "../components/SocialMedia";
 import CreateYourOwn from "../components/CreateYourOwn";
 
 const Explore = () => {
-  const [isSelected, setIsSelected] = useState("photos"); // Default state should match the initial UI
+  const [isSelected, setIsSelected] = useState("photos");
 
   return (
     <div className="md:px-32 px-8 py-8 md:py-16">

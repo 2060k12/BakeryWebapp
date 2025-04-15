@@ -33,6 +33,9 @@ export class Item {
   @Column()
   name!: string;
 
+  @Column({ nullable: true })
+  itemImage?: string;
+
   @Column({
     type: "enum",
     enum: DietaryOption,
@@ -68,7 +71,7 @@ export class Item {
   @ManyToOne(() => EventType, (event) => event.item)
   event?: EventType;
 
-  @ManyToOne(() => Orders, (order) => order.item)
+  @ManyToOne(() => Orders, (order) => order.items)
   order?: Relation<Orders>;
 
   @OneToOne(() => Promotion, (promotion) => promotion.item)

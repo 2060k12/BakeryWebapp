@@ -28,11 +28,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       new ApiResponse(
         StatusCode.OK,
-        { seachdBusiness },
+        seachdBusiness,
         "Business Found Successfully",
         true
-      ),
-      { status: StatusCode.OK }
+      )
     );
   } catch (error) {
     if (error instanceof ApiError) {

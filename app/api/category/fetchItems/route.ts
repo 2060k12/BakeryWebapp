@@ -1,19 +1,21 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
 import { Category } from "@/db/models/CategoryModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { IsNull } from "typeorm";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // initializing data source
     await initializeDataSource();
-
+    const { id } = Object.fromEntries(req.nextUrl.searchParams);
     const repository = AppDataSource.getRepository(Category);
 
+    if (!id) throw new ApiError(StatusCode.BAD_REQUEST, {}, "Id is required.");
     // search for the category in the database
-    const searched = await repository.find({
-      where: { deletedAt: IsNull() }, // Only fetch category that are not soft deleted
+    const searched = await repository.findOne({
+      where: { deletedAt: IsNull(), id },
+      relations: ["items"],
     });
 
     if (!searched)

@@ -1,32 +1,33 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
-import { Orders, OrderStatus } from "@/db/models/OrderModel";
+import { Orders } from "@/db/models/OrderModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status");
+  const id = searchParams.get("id");
 
   try {
+    if (!id) throw new ApiError(StatusCode.NOT_FOUND, {}, "Id is required.");
+
     await initializeDataSource();
     const orderRepo = AppDataSource.getRepository(Orders);
 
-    let existingOrders;
-    // searching
-    if (status && Object.values(OrderStatus).includes(status as OrderStatus)) {
-      const typedStatus = status as OrderStatus;
-      existingOrders = await orderRepo.find({
-        where: { status: typedStatus },
-      });
-    } else {
-      existingOrders = await orderRepo.find();
-    }
+    // search
+    const existingOrder = await orderRepo.find({
+      where: { id },
+      relations: ["customer", "proofOfPayment", "items"],
+    });
 
-    if (existingOrders.length <= 0)
-      throw new ApiError(StatusCode.OK, {}, "Order not found.");
+    if (!existingOrder)
+      throw new ApiError(StatusCode.NOT_FOUND, {}, "Order not found.");
 
     return NextResponse.json(
-      new ApiResponse(StatusCode.OK, existingOrders, "All Orders fetched")
+      new ApiResponse(
+        StatusCode.OK,
+        { existingOrder },
+        "Order details fetched."
+      )
     );
   } catch (error) {
     if (error instanceof ApiError) {

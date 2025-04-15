@@ -16,7 +16,7 @@ export class Promotion {
   @PrimaryGeneratedColumn("uuid")
   id: string = uuidv4();
 
-  @Column({ unique: true })
+  @Column()
   code!: string;
 
   @Column("float")

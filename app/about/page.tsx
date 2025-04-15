@@ -1,23 +1,57 @@
+"use client";
 import Image from "next/image";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { ApiResponse } from "@/helpers/apiResponse";
+import toast from "react-hot-toast";
+
+interface BusinessPayload {
+  id: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  description: string;
+  imageUrl: string;
+  openingTime: string;
+  closingTime: string;
+  socialMediaLinks: string | null;
+  branchName: string | null;
+  isActive: boolean;
+}
 
 export default function Page() {
+  const [business, setBusiness] = useState<BusinessPayload | null>(null);
+  const fetchData = async () => {
+    const baseUrl = process.env.BASE_URL || "";
+    try {
+      const response = await axios.get<ApiResponse<BusinessPayload>>(
+        `${baseUrl}/api/about/fetchDetails`
+      );
+      setBusiness(response.data.data);
+      console.log("-------------------------------");
+      console.log(response.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast("Failed to fetch data!", {
+        position: "top-center",
+        icon: "❌",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <>
       <div className="md:px-44 px-8 pt-18 pb-8">
         <h1 className="font-bold text-3xl">About Us</h1>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          euismod, justo eget facilisis dapibus, nunc ligula fermentum nunc, at
-          gravida libero sapien at risus. Curabitur id metus at orci accumsan
-          ultricies. Fusce interdum, odio ut ullamcorper tristique, odio risus
-          posuere sapien, sit amet tincidunt felis ex ut lectus. Integer et
-          metus id purus fermentum posuere. Aliquam erat volutpat. Suspendisse
-          potenti. Nulla facilisi. Donec at ex eget velit accumsan maximus vel
-          ut urna.
-        </p>
+        <p>{business?.description}</p>
       </div>
       <Image
-        src={"/images/banner.jpg"}
+        src={business?.imageUrl ? business?.imageUrl : "/images/banner.jpg"}
         width={500}
         height={500}
         alt="banner"
@@ -27,19 +61,35 @@ export default function Page() {
         <div>
           <h3 className="font-bold text-3xl">Contact Info</h3>
           <div className="text-xl">
-            <h4>+977 9800112233</h4>
-            <h4>+977 98441122333</h4>
-            <h4>iampranish@outlook.com</h4>
+            <h4>{business?.phoneNumber}</h4>
+            <h4>{business?.email}</h4>
+            <h4>{business?.address}</h4>
           </div>
         </div>
         <hr className="border-gray-700 border-1 my-3 md:hidde" />
         <div>
           <h3 className="font-bold text-3xl ">We are available on</h3>
           <div className="text-xl md:text-right font-bold">
-            <h4>Whatsapp</h4>
-            <h4>facebook</h4>
-            <h4>Instagram</h4>
-            <h4>tiktok</h4>
+            <div className="text-xl md:text-right font-bold">
+              {business?.socialMediaLinks ? (
+                Object.entries(business.socialMediaLinks).map(
+                  ([platform, link]) => (
+                    <h4 key={platform}>
+                      <a
+                        href={`https://${link}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:cursor-pointer hover:underline"
+                      >
+                        {platform}
+                      </a>
+                    </h4>
+                  )
+                )
+              ) : (
+                <h4>No social media available</h4>
+              )}
+            </div>
           </div>
         </div>
       </div>

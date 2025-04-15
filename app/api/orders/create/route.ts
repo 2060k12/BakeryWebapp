@@ -90,6 +90,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const savedItems = await itemRepo.save(existingItems);
+
     // add customer details in database
     const customerRepo = AppDataSource.getRepository(Customers);
     const newCustomer = customerRepo.create({
@@ -117,7 +119,7 @@ export async function POST(req: NextRequest) {
       GrossPrice: orderPayload.GrossPrice,
       proofOfPayment: savedProof,
       status: OrderStatus.PENDING,
-      items: existingItems,
+      items: savedItems,
       discount: orderPayload.discount,
       customer: savedCustomer,
     });

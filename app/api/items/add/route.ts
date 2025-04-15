@@ -11,6 +11,7 @@ interface NewCakePayload {
   dietaryOption?: DietaryOption;
   price?: number;
   categoryId: string;
+  itemImage: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
       dietaryOption,
       price,
       categoryId,
+      itemImage,
     }: NewCakePayload = await req.json();
 
     if (!name || !categoryId)
@@ -57,6 +59,7 @@ export async function POST(req: NextRequest) {
       message,
       dietaryOption,
       price,
+      itemImage,
     });
 
     const savedItem = await itemRepository.save(newItem);

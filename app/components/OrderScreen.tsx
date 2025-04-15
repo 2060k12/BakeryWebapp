@@ -1,9 +1,42 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReadyForDelivery from "./ReadyForDelivery";
+import { OrderStatus } from "@/db/models/OrderModel";
+import axios from "axios";
+import { ApiResponse } from "@/helpers/apiResponse";
+import toast, { Toaster } from "react-hot-toast";
+import { Item } from "@/db/models/ItemModel";
 
+export interface Order {
+  id: string;
+  GrossPrice: number;
+  appliedPromo: string;
+  discount: number;
+  status: OrderStatus;
+  deliveryDate: Date;
+  createdAt: Date;
+  deletedAt: string | null;
+}
 const OrderScreen = () => {
   const [openReadyForDelivery, setOpenReadyForDelivery] = useState(false);
+  const [orders, setOrders] = useState<Order[] | null>(null);
+
+  const handleFetchAllOrders = async () => {
+    try {
+      const response = await axios.get<ApiResponse<Order[]>>(
+        `${process.env.BASE_URL}/api/orders/fetch`
+      );
+
+      setOrders(response.data.data);
+    } catch (error) {
+      toast("Failed to fetch. " + error);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchAllOrders();
+  }, []);
+
   return (
     <>
       <div className="p-4">
@@ -58,63 +91,31 @@ const OrderScreen = () => {
 
         <h2 className="text-xl my-4">On-going Orders</h2>
         <div className="grid grid-cols-2 gap-x-3 space-y-4">
-          {/* Order 1 */}
-          <div className=" bg-black text-white rounded-sm p-4">
-            <div className="flex justify-between">
-              <h2>Birthday Cake</h2>
-              <h2># 44345</h2>
-            </div>
-            <div className="flex justify-between">
-              <h2>1 xyz street, Campsie, 2194</h2>
-              <h2>28 Mar, 2025</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="text-xl bg-black-600 border-2 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
-                View Details
-              </button>
-              <button className="text-xl bg-green-600 border-2 border-green-600 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
-                Ready For delivery
-              </button>
-            </div>
-          </div>
-          {/* Order 2 */}
-          <div className=" bg-black text-white rounded-sm p-4">
-            <div className="flex justify-between">
-              <h2>Birthday Cake</h2>
-              <h2># 44345</h2>
-            </div>
-            <div className="flex justify-between">
-              <h2>1 xyz street, Campsie, 2194</h2>
-              <h2>28 Mar, 2025</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="text-xl bg-black-600 border-2 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
-                View Details
-              </button>
-              <button className="text-xl bg-green-600 border-2 border-green-600 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
-                Ready For delivery
-              </button>
-            </div>
-          </div>
-          {/* Order 3 */}
-          <div className=" bg-black text-white rounded-sm p-4">
-            <div className="flex justify-between">
-              <h2>Birthday Cake</h2>
-              <h2># 44345</h2>
-            </div>
-            <div className="flex justify-between">
-              <h2>1 xyz street, Campsie, 2194</h2>
-              <h2>28 Mar, 2025</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="text-xl bg-black-600 border-2 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
-                View Details
-              </button>
-              <button className="text-xl bg-green-600 border-2 border-green-600 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
-                Ready For delivery
-              </button>
-            </div>
-          </div>
+          {orders
+            ?.filter((item) => item.status === OrderStatus.PENDING)
+            .map((each) => (
+              <div
+                key={each.id}
+                className=" bg-black text-white rounded-sm p-4"
+              >
+                <div className="flex justify-between">
+                  <h2>Birthday Cake</h2>
+                  <h2># 44345</h2>
+                </div>
+                <div className="flex justify-between">
+                  <h2>1 xyz street, Campsie, 2194</h2>
+                  <h2>28 Mar, 2025</h2>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button className="text-xl bg-black-600 border-2 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
+                    View Details
+                  </button>
+                  <button className="text-xl bg-green-600 border-2 border-green-600 text-white p-2 rounded-sm hover:cursor-pointer  hover:bg-green-500 hover:border-green-500 mt-3 w-full">
+                    Ready For delivery
+                  </button>
+                </div>
+              </div>
+            ))}
         </div>
 
         {/* View previous orders when this button is pressed */}
