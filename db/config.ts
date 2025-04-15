@@ -7,6 +7,9 @@ import { Customers } from "./models/CustomerModel";
 import { ProofOfPayment } from "./models/ProofOfPayment";
 import { Orders } from "./models/OrderModel";
 import { EventType } from "./models/EventType";
+import { OrderItem } from "./models/orderItemModel";
+import { Promotion } from "./models/Promotion";
+import { Admin } from "./models/AdminModel";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -16,13 +19,16 @@ export const AppDataSource = new DataSource({
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
   entities: [
-    ProofOfPayment,
+    Category,
     Item,
     BusinessDetail,
+    Admin,
+    ProofOfPayment,
     Orders,
     EventType,
-    Category,
     Customers,
+    Promotion,
+    OrderItem,
   ],
   synchronize: process.env.NODE_ENV === "production" ? false : true,
   ssl: { rejectUnauthorized: false },

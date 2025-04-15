@@ -4,8 +4,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   DeleteDateColumn,
+  OneToMany,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
+import { Item } from "./ItemModel";
 
 @Entity()
 export class EventType {
@@ -20,4 +22,7 @@ export class EventType {
 
   @DeleteDateColumn()
   deletedAt!: Date | null;
+
+  @OneToMany(() => Item, (item) => item.event)
+  item?: Item[];
 }

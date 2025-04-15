@@ -4,7 +4,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   DeleteDateColumn,
-  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Item } from "./ItemModel";
@@ -23,6 +23,6 @@ export class Category {
   @DeleteDateColumn()
   deletedAt!: Date | null;
 
-  @ManyToOne(() => Item, (item) => item.category)
-  items!: Category[];
+  @OneToMany(() => Item, (item) => item.category)
+  items?: Category[];
 }

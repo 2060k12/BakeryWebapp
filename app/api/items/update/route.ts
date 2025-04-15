@@ -1,16 +1,15 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
-import { Category } from "@/db/models/CategoryModel";
 import { Item, DietaryOption } from "@/db/models/ItemModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextRequest, NextResponse } from "next/server";
 
-interface NewCakePayload {
+interface ItemPayload {
+  id: string;
   name: string;
   description?: string;
   message?: string;
   dietaryOption?: DietaryOption;
   price?: number;
-  categoryId: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -21,15 +20,12 @@ export async function POST(req: NextRequest) {
       message,
       dietaryOption,
       price,
-      categoryId,
-    }: NewCakePayload = await req.json();
+      id,
+    }: ItemPayload = await req.json();
 
-    if (!name || !categoryId)
-      throw new ApiError(
-        StatusCode.BAD_REQUEST,
-        {},
-        "Name or Category id cannot be empty"
-      );
+    if (!id)
+      throw new ApiError(StatusCode.BAD_REQUEST, {}, "Id cannot be empty");
+
     if (
       dietaryOption &&
       !Object.values(DietaryOption).includes(dietaryOption)
@@ -40,26 +36,28 @@ export async function POST(req: NextRequest) {
     // initializing data source
     await initializeDataSource();
 
-    // initilizing categry and itemRepository
+    // initializing category and itemRepository
     const itemRepository = AppDataSource.getRepository(Item);
-    const categoryRepository = AppDataSource.getRepository(Category);
-    const category = await categoryRepository.findOne({
-      where: { id: categoryId },
+
+    const existingItem = await itemRepository.findOne({
+      where: {
+        id,
+      },
     });
 
-    if (!category)
-      throw new ApiError(StatusCode.BAD_REQUEST, {}, "Categiry not found");
+    if (!existingItem) {
+      throw new ApiError(StatusCode.BAD_REQUEST, {}, "Item not found");
+    }
 
-    const newItem = itemRepository.create({
-      category,
-      name,
-      description,
-      message,
-      dietaryOption,
-      price,
-    });
+    // Update the existing item fields
+    if (name !== undefined) existingItem.name = name;
+    if (description !== undefined) existingItem.description = description;
+    if (message !== undefined) existingItem.message = message;
+    if (dietaryOption !== undefined) existingItem.dietaryOption = dietaryOption;
+    if (price !== undefined) existingItem.price = price;
 
-    const savedItem = await itemRepository.save(newItem);
+    const savedItem = await itemRepository.save(existingItem);
+
     if (!savedItem)
       throw new ApiError(
         StatusCode.BAD_REQUEST,
@@ -68,12 +66,7 @@ export async function POST(req: NextRequest) {
       );
 
     return NextResponse.json(
-      new ApiResponse(
-        StatusCode.CREATED,
-        { savedItem },
-        "New Item Added",
-        true
-      ),
+      new ApiResponse(StatusCode.CREATED, { savedItem }, "Item saved", true),
       { status: StatusCode.CREATED }
     );
   } catch (error) {

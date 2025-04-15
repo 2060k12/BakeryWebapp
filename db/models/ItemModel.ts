@@ -7,9 +7,17 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { Category } from "./CategoryModel";
+import { Promotion } from "./Promotion";
+import { EventType } from "./EventType";
+import type { Relation } from "typeorm";
+import { Orders } from "./OrderModel";
+
+// diatery options enum
 
 export enum DietaryOption {
   VEGAN = "VEGAN",
@@ -56,6 +64,16 @@ export class Item {
 
   @ManyToOne(() => Category, (category) => category.items)
   category!: Category;
+
+  @ManyToOne(() => EventType, (event) => event.item)
+  event?: EventType;
+
+  @ManyToOne(() => Orders, (order) => order.item)
+  order?: Relation<Orders>;
+
+  @OneToOne(() => Promotion, (promotion) => promotion.item)
+  @JoinColumn()
+  promotion?: Relation<Promotion>;
 
   @DeleteDateColumn()
   deletedAt!: Date | null;

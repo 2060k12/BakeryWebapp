@@ -1,15 +1,16 @@
-import { Entity, Column, ManyToOne, PrimaryColumn } from "typeorm";
+import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 // import { Orders } from "./OrderModel";
+import type { Relation } from "typeorm";
 
-import { Customers } from "./CustomerModel";
+import { Orders } from "./OrderModel";
 
 @Entity()
 export class ProofOfPayment {
-  @PrimaryColumn("uuid")
-  orderId!: string;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-  @ManyToOne(() => Customers, (customer) => customer)
-  customers!: Customers;
+  @ManyToOne(() => Orders, (item) => item.proofOfPayment)
+  Order?: Relation<Orders>;
 
   @Column({ type: "text", nullable: false })
   proofScreenshot!: string;

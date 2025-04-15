@@ -5,29 +5,29 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 
 import { v4 as uuidv4 } from "uuid";
-import { Item } from "./ItemModel";
 import { ProofOfPayment } from "./ProofOfPayment";
+import { Customers } from "./CustomerModel";
+import type { Relation } from "typeorm";
+import { Item } from "./ItemModel";
 
-enum OrderStatus {
-  PENDING = "pending",
-  ONGOING = "onGoing",
-  READYFORDELIVERY = "readyForDelivery",
-  DELIVERED = "delivered",
-  CANCELLED = "cancelled",
+export enum OrderStatus {
+  PENDING = "PENDING",
+  ONGOING = "ONGOING",
+  READYFORDELIVERY = "READYFORDELIVERY",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
 }
 
 @Entity()
 export class Orders {
   @PrimaryGeneratedColumn("uuid")
   id: string = uuidv4();
-
-  @ManyToOne(() => Item, { nullable: true })
-  items?: Item[];
 
   @Column({ type: "float", nullable: false })
   GrossPrice!: number;
@@ -53,5 +53,11 @@ export class Orders {
   // relations
   @OneToOne(() => ProofOfPayment)
   @JoinColumn()
-  proofOfPayment?: ProofOfPayment;
+  proofOfPayment?: Relation<ProofOfPayment>;
+
+  @OneToMany(() => Item, (item) => item.order)
+  items!: Relation<Item[]>;
+
+  @ManyToOne(() => Customers)
+  customer!: Relation<Customers>;
 }
