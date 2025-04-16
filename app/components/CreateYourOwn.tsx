@@ -1,8 +1,10 @@
+// "use client";
 import React, { useCallback, useState } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { uploadToCloud } from "@/db/config";
 
 const CreateYourOwn = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -34,16 +36,30 @@ const CreateYourOwn = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    console.log(imagePreview);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (!imagePreview) {
       toast.error("Upload a reference first");
-      e.preventDefault();
       return;
     }
 
-    console.log("Form Submitted:", formData);
-    alert("Cake order submitted successfully!");
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: imagePreview }),
+      });
+
+      const data = await response.json();
+      console.log("Uploaded image URL:", data.secure_url);
+      toast.success("Upload successful!");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload");
+    }
   };
 
   return (

@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const orderRepo = AppDataSource.getRepository(Orders);
 
     // search
-    const existingOrder = await orderRepo.find({
+    const existingOrder = await orderRepo.findOne({
       where: { id },
       relations: ["customer", "proofOfPayment", "items"],
     });
@@ -23,11 +23,7 @@ export async function GET(req: NextRequest) {
       throw new ApiError(StatusCode.NOT_FOUND, {}, "Order not found.");
 
     return NextResponse.json(
-      new ApiResponse(
-        StatusCode.OK,
-        { existingOrder },
-        "Order details fetched."
-      )
+      new ApiResponse(StatusCode.OK, existingOrder, "Order details fetched.")
     );
   } catch (error) {
     if (error instanceof ApiError) {

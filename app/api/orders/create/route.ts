@@ -7,6 +7,7 @@ import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextRequest, NextResponse } from "next/server";
 import { In } from "typeorm";
 interface createOrderPayload {
+  orderName: string;
   appliedPromo: string;
   deliveryDate: Date;
   discount?: number;
@@ -114,6 +115,7 @@ export async function POST(req: NextRequest) {
     // Store orders in database
     const orderRepo = AppDataSource.getRepository(Orders);
     const newOrder = orderRepo.create({
+      orderName: orderPayload.orderName,
       appliedPromo: orderPayload.appliedPromo,
       deliveryDate: orderPayload.deliveryDate,
       GrossPrice: orderPayload.GrossPrice,

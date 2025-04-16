@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -7,10 +8,10 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from "typeorm";
+import { customAlphabet } from "nanoid";
 
-import { v4 as uuidv4 } from "uuid";
 import { ProofOfPayment } from "./ProofOfPayment";
 import { Customers } from "./CustomerModel";
 import type { Relation } from "typeorm";
@@ -23,11 +24,20 @@ export enum OrderStatus {
   DELIVERED = "DELIVERED",
   CANCELLED = "CANCELLED",
 }
+const nanoid = customAlphabet("0123456789", 8);
 
 @Entity()
 export class Orders {
-  @PrimaryGeneratedColumn("uuid")
-  id: string = uuidv4();
+  @PrimaryColumn({ unique: true })
+  id?: string;
+
+  @BeforeInsert()
+  generateId() {
+    this.id = nanoid(8);
+  }
+
+  @Column({ type: "text", nullable: true })
+  orderName?: string;
 
   @Column({ type: "float", nullable: false })
   GrossPrice!: number;

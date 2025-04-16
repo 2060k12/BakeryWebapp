@@ -3,7 +3,7 @@ import { Orders, OrderStatus } from "@/db/models/OrderModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
   const id = searchParams.get("id");
