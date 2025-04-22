@@ -132,16 +132,16 @@ const Search = () => {
           ))}
         </div>
         {currentCategoryId == "" ? (
-          <div className="mx-auto text-center mt-8">
+          <div className="mx-auto text-center mt-8 ">
             <h1 className="text-2xl font-semibold">
               Click on the category to view lists
             </h1>
           </div>
         ) : (
-          <div>
+          <div className="flex gap-5 mt-4">
             {currentCategoryItems?.map((item) => (
               <PhotoView
-                image={item.itemImage ? item.itemImage : "/image/cake1.jpg"}
+                item={item}
                 key={item.id}
                 imageAlt=""
                 onClick={() => {}}

@@ -63,7 +63,7 @@ const Page = () => {
           </li>
         </ul>
       </div>
-      <div className="col-span-3 bg-gray-400 ml-4 rounded-sm">
+      <div className="col-span-3 bg-gray-900 ml-4 rounded-sm">
         <div>{currentScreen === "upload" && <AdminUploadScreen />}</div>
         <div>{currentScreen === "offers" && <OffersScreen />}</div>
         <div>{currentScreen === "edit" && <EditScreen />}</div>

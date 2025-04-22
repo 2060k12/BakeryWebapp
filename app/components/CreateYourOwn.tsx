@@ -4,7 +4,6 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { uploadToCloud } from "@/db/config";
 
 const CreateYourOwn = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -50,11 +49,37 @@ const CreateYourOwn = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ image: imagePreview }),
+        body: JSON.stringify({
+          fileName: `upload_${Date.now()}.png`, // you can customize the name/extension
+          fileType: "image/png",
+        }),
       });
 
-      const data = await response.json();
-      console.log("Uploaded image URL:", data.secure_url);
+      if (!response.ok) {
+        throw new Error("Failed to get presigned URL");
+      }
+
+      const { uploadUrl } = await response.json();
+
+      // Convert base64 to Blob
+      const blob = await (await fetch(imagePreview)).blob();
+
+      // Upload the image to the presigned URL
+      const uploadResponse = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "image/png",
+        },
+        body: blob,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image to S3");
+      }
+
+      const fileUrl = uploadUrl.split("?")[0]; // public URL
+
+      console.log("Uploaded image URL:", fileUrl);
       toast.success("Upload successful!");
     } catch (error) {
       console.error("Upload failed:", error);

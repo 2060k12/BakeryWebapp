@@ -23,6 +23,7 @@ export enum DietaryOption {
   VEGAN = "VEGAN",
   DAIRY_FREE = "DAIRY_FREE",
   VEGETARIAN_CONTAINS_EGG = "VEGETARIAN_CONTAINS_EGG",
+  All_OPTIONS = "All_OPTIONS",
 }
 
 @Entity()

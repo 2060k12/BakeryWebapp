@@ -13,6 +13,7 @@ export async function GET() {
 
     // search for the cake in the database
     const cakes = await cakeRepository.find({
+      relations: ["category"], // Fetch related entities
       where: { deletedAt: IsNull() }, // Only fetch cakes that are not soft deleted
     });
 
@@ -20,7 +21,7 @@ export async function GET() {
       throw new ApiError(StatusCode.BAD_REQUEST, {}, "Cake not found");
 
     return NextResponse.json(
-      new ApiResponse(StatusCode.OK, { cakes }, "All Cakes Fetched ", true),
+      new ApiResponse(StatusCode.OK, cakes, "All Cakes Fetched ", true),
       { status: StatusCode.OK }
     );
   } catch (error) {

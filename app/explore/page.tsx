@@ -2,7 +2,6 @@
 import { useState } from "react";
 import Photos from "../components/Photos";
 import { Videos } from "../components/Videos";
-import SocialMedia from "../components/SocialMedia";
 import CreateYourOwn from "../components/CreateYourOwn";
 
 const Explore = () => {
@@ -28,14 +27,14 @@ const Explore = () => {
         >
           Videos
         </button>
-        <button
+        {/* <button
           className={` hover:cursor-pointer ${
             isSelected === "social" ? "underline" : ""
           } ${isSelected === "social" ? "font-bold" : ""}`}
           onClick={() => setIsSelected("social")}
         >
           Social Media
-        </button>
+        </button> */}
         <button
           className={`hover:cursor-pointer ${
             isSelected === "createYourOwn" ? "underline" : ""
@@ -50,7 +49,7 @@ const Explore = () => {
       <div className="mt-8">
         {isSelected === "photos" && <Photos />}
         {isSelected === "videos" && <Videos />}
-        {isSelected === "social" && <SocialMedia />}
+        {/* {isSelected === "social" && <SocialMedia />} */}
         {isSelected === "createYourOwn" && <CreateYourOwn />}
       </div>
     </div>

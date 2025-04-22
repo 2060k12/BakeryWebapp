@@ -12,7 +12,7 @@ interface ItemPayload {
   price?: number;
 }
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   try {
     const {
       name,

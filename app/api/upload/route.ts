@@ -1,24 +1,44 @@
-import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
+interface UploadRequestBody {
+  fileName: string;
+  fileType: string;
+}
+
+interface UploadResponse {
+  uploadUrl: string;
+}
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION || "",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+  },
 });
 
-// upload image
 export async function POST(req: NextRequest) {
-  try {
-    const { image } = await req.json();
-    const result = await cloudinary.uploader.upload(image);
-    console.log("Cloudinary upload result:", result);
-    console.log("Cloudinary upload result:", result);
-    console.log("Cloudinary upload result:", result);
-    console.log("Cloudinary upload result:", result);
+  const { fileName, fileType }: UploadRequestBody = await req.json();
 
-    return NextResponse.json(result, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!fileName || !fileType) {
+    return NextResponse.json(
+      { message: "Missing required fields" },
+      { status: 400 }
+    );
   }
+
+  const command = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: fileName,
+    ContentType: fileType,
+    ACL: "public-read",
+  });
+
+  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+  const response: UploadResponse = { uploadUrl };
+
+  return NextResponse.json(response, { status: 200 });
 }

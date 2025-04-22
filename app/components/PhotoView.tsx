@@ -1,20 +1,21 @@
 import Image from "next/image";
 import React from "react";
+import { Item } from "./Photos";
 
 interface PhotoViewProps {
-  image: string;
   imageAlt: string;
   onClick?: () => void;
+  item: Item;
 }
 
-const PhotoView: React.FC<PhotoViewProps> = ({ image, imageAlt, onClick }) => {
+const PhotoView: React.FC<PhotoViewProps> = ({ imageAlt, onClick, item }) => {
   return (
     <div
       className="flex justify-center hover:cursor-pointer  "
       onClick={onClick}
     >
       <Image
-        src={image}
+        src={item.itemImage ? item.itemImage : "/images/cake1.jpg"}
         alt={imageAlt}
         width={200}
         height={200}
