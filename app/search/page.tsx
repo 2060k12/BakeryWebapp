@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { IoFilter } from "react-icons/io5";
 import PhotoView from "../components/PhotoView";
 
-interface CategoriesPayload {
+export interface CategoriesPayload {
   id: string;
   name: string;
   description: string;

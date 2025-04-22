@@ -1,22 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import TikTokEmbed from "./EachViewComponents";
+import { ApiResponse } from "@/helpers/apiResponse";
+import { VideoModel } from "@/db/models/VideoModel";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export const Videos = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [videos, setVideos] = React.useState<VideoModel[] | null>(null);
 
-  const videoUrls = [
-    "https://www.tiktok.com/@thesweetimpact/video/7196739176266550570?is_from_webapp=1&sender_device=pc&web_id=7461986454807021074",
-    "https://www.tiktok.com/@tigga_mac/video/7342389302422162706?is_from_webapp=1&sender_device=pc",
-    "https://www.tiktok.com/@magallycakess/video/7367159800511335726?is_from_webapp=1&sender_device=pc",
-  ];
+  // Function to fetch all videos
+  const fetchAllVideos = async () => {
+    const response = await axios.get<ApiResponse<VideoModel[]>>(
+      "/api/video/fetchAll",
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      setVideos(response.data.data);
+    } else {
+      toast.error("Unable to fetch videos. Please try again later.", {
+        duration: 3000,
+      });
+      setVideos(null);
+    }
+  };
 
   useEffect(() => {
-    // Simulate loading effect
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500); // 1.5 seconds
-
-    return () => clearTimeout(timer);
+    fetchAllVideos();
+    setIsLoading(false);
   }, []);
 
   return (
@@ -26,7 +41,17 @@ export const Videos = () => {
           <p>Loading videos...</p>
         </div>
       ) : (
-        videoUrls.map((url) => <TikTokEmbed key={url} videoUrl={url} />)
+        <>
+          {videos && videos.length > 0 ? (
+            videos.map((video) => (
+              <TikTokEmbed key={video.id} videoUrl={video.videoUrl} />
+            ))
+          ) : (
+            <div style={{ textAlign: "center", padding: "20px" }}>
+              <p>No videos available.</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

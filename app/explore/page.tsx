@@ -17,7 +17,7 @@ const Explore = () => {
           } ${isSelected === "photos" ? "font-bold" : ""}`}
           onClick={() => setIsSelected("photos")}
         >
-          Photos
+          All Items
         </button>
         <button
           className={`hover:cursor-pointer ${
@@ -27,14 +27,7 @@ const Explore = () => {
         >
           Videos
         </button>
-        {/* <button
-          className={` hover:cursor-pointer ${
-            isSelected === "social" ? "underline" : ""
-          } ${isSelected === "social" ? "font-bold" : ""}`}
-          onClick={() => setIsSelected("social")}
-        >
-          Social Media
-        </button> */}
+
         <button
           className={`hover:cursor-pointer ${
             isSelected === "createYourOwn" ? "underline" : ""
@@ -49,7 +42,6 @@ const Explore = () => {
       <div className="mt-8">
         {isSelected === "photos" && <Photos />}
         {isSelected === "videos" && <Videos />}
-        {/* {isSelected === "social" && <SocialMedia />} */}
         {isSelected === "createYourOwn" && <CreateYourOwn />}
       </div>
     </div>

@@ -1,40 +1,69 @@
 "use client";
-import { CldImage } from "next-cloudinary";
-
-import React, { useCallback, useState } from "react";
-
+import React, { useCallback, useEffect, useState } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useDropzone } from "react-dropzone";
-import Image from "next/image";
 import toast from "react-hot-toast";
-import Dropdown from "./DropDown";
 import axios from "axios";
 import { ApiResponse } from "@/helpers/apiResponse";
-import { uploadResult } from "@/lib/cloudinari";
+import { CategoriesPayload } from "../search/page";
+
+enum DietaryOption {
+  VEGAN = "VEGAN",
+  DAIRY_FREE = "DAIRY_FREE",
+  VEGETARIAN_CONTAINS_EGG = "VEGETARIAN_CONTAINS_EGG",
+  ALL_OPTIONS = "All_OPTIONS",
+}
 
 const AdminUploadScreen = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [dietaryOption, setDietaryOption] = useState<DietaryOption>(
+    DietaryOption.VEGAN
+  );
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categories, setCategories] = useState<CategoriesPayload[]>([]);
+  const [formData, setFormData] = useState({
+    cakeName: "",
+    description: "",
+    price: "",
+  });
 
-  // Handle File Upload
+  const baseUrl = process.env.BASE_URL || "";
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const handleFetchAllCategories = async () => {
+      try {
+        const response = await axios.get<ApiResponse<CategoriesPayload[]>>(
+          `${baseUrl}/api/category/fetchAllCategory`
+        );
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to fetch categories!", {
+          position: "top-center",
+          icon: "❌",
+        });
+      }
+    };
+
+    handleFetchAllCategories();
+  }, []);
+
+  // Image upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
-  });
-
-  const [formData, setFormData] = useState({
-    cakeName: "",
-    description: "",
-    price: 0,
   });
 
   const handleChange = (
@@ -44,44 +73,71 @@ const AdminUploadScreen = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(imagePreview);
-    if (!imagePreview) {
-      toast.error("Upload a reference first");
-      e.preventDefault();
+    e.preventDefault();
+
+    if (!file) {
+      toast.error("Upload a reference image first");
+      return;
+    }
+    if (!categoryId) {
+      toast.error("Select a category");
       return;
     }
 
-    const uploadImage = async (imageBase64: string) => {
-      const response = await fetch("/api/upload", {
+    try {
+      // 1. Get signed URL for the image upload
+      const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: imageBase64 }),
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type,
+        }),
       });
 
-      const data = await response.json();
-      return data.url;
-    };
-    if (!uploadImage) {
-      toast.error("Unable to upload Image");
-      return;
-    }
-    handleCreateNewOrderApiCall({
-      categoryId: "",
-      description: formData.description,
-      itemImage: uploadImage.toString(),
-      message: "",
-      dietaryOption: "",
-      name: formData.cakeName,
-      price: formData.price,
-    });
+      if (!uploadResponse.ok) {
+        toast.error("Failed to get upload URL");
+        return;
+      }
 
-    console.log("Form Submitted:", formData);
-    alert("Cake order submitted successfully!");
+      const { uploadUrl } = await uploadResponse.json();
+
+      // 2. Upload the image to S3
+      await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      // 3. Get the public image URL (remove query params from the signed URL)
+      const uploadedImageUrl = uploadUrl.split("?")[0];
+
+      if (!uploadedImageUrl) {
+        toast.error("Image upload failed");
+        return;
+      }
+
+      // 4. Call your create item API
+      await handleCreateNewOrderApiCall({
+        name: formData.cakeName,
+        description: formData.description,
+        message: "",
+        dietaryOption,
+        price: Number(formData.price),
+        categoryId,
+        itemImage: uploadedImageUrl,
+      });
+
+      toast.success("Item added successfully!");
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Something went wrong!");
+    }
   };
 
-  const baseUrl = process.env.BASE_URL || "";
-  // create a new order api call
-  const handleCreateNewOrderApiCall = (req: {
+  const handleCreateNewOrderApiCall = async (req: {
     name: string;
     description: string;
     message: string;
@@ -91,18 +147,24 @@ const AdminUploadScreen = () => {
     itemImage: string;
   }) => {
     try {
-      const res = axios.post<ApiResponse<object>>(
-        `${baseUrl}/api/items/add`,
-        {}
+      const response = await axios.post<ApiResponse<object>>(
+        `/api/items/add`,
+        req
       );
+      if (response.data.success) {
+        toast.success("Item created successfully!");
+      } else {
+        toast.error("Failed to create item.");
+      }
     } catch (error) {
-      toast.error("Something went wrong" + error);
+      console.error("API error:", error);
+      toast.error("Failed to create item.");
     }
   };
 
   return (
-    <div className="grid grid-cols-4 m-8">
-      {/* Cake Reference Section */}
+    <div className="grid grid-cols-4 m-8 gap-6">
+      {/* Upload Section */}
       <section className="flex flex-col col-span-2">
         <div
           {...getRootProps()}
@@ -110,25 +172,13 @@ const AdminUploadScreen = () => {
         >
           <input {...getInputProps()} />
           {imagePreview ? (
-            <CldImage
+            <img
               src={imagePreview}
-              width="500"
-              height="500"
-              alt="Uploaded Cake Reference"
-              crop={{
-                type: "auto",
-                source: true,
-              }}
+              alt="Cake Reference"
+              className="w-full h-full object-cover rounded-xl"
             />
           ) : (
-            // <Image
-            //   src={imagePreview}
-            //   alt="Cake Reference"
-            //   height={200}
-            //   width={200}
-            //   className="w-full h-full object-cover rounded-xl"
-            // />
-            <div className="flex flex-col items-center ">
+            <div className="flex flex-col items-center">
               <IoCloudUploadOutline className="text-4xl text-gray-600" />
               <span className="text-gray-600 text-sm">Upload New Item</span>
             </div>
@@ -136,42 +186,37 @@ const AdminUploadScreen = () => {
         </div>
       </section>
 
-      {/* Text Field Section */}
+      {/* Form Section */}
       <section className="flex flex-col col-span-2">
         <form
           onSubmit={handleSubmit}
           className="w-full mx-auto h-full p-5 border rounded-xl shadow-lg space-y-4 bg-black border-gray-600"
         >
-          <div>
-            <input
-              type="text"
-              name="cakeName"
-              placeholder="Item Name"
-              value={formData.cakeName}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              required
-            />
-          </div>
+          <input
+            type="text"
+            name="cakeName"
+            placeholder="Item Name"
+            value={formData.cakeName}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
 
-          {/* <Dropdown /> */}
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows={2}
+            required
+          ></textarea>
 
-          <div>
-            <textarea
-              name="description"
-              placeholder="Description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              rows={2}
-              required
-            ></textarea>
-          </div>
-          <div className="flex ">
+          <div className="flex">
             <span className="text-2xl py-2 pr-4">$</span>
             <input
-              type="text"
-              name="message"
+              type="number"
+              name="price"
               placeholder="Price"
               value={formData.price}
               onChange={handleChange}
@@ -179,9 +224,39 @@ const AdminUploadScreen = () => {
               required
             />
           </div>
+
+          {/* Category Selection */}
+          <select
+            value={categoryId || ""}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="w-full p-3 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Dietary Option Selection */}
+          <select
+            value={dietaryOption}
+            onChange={(e) => setDietaryOption(e.target.value as DietaryOption)}
+            className="w-full p-3 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            {Object.values(DietaryOption).map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
           <button
             type="submit"
-            className="  text-green-400 font-bold text-2xl text-left  p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
+            className="text-green-400 font-bold text-2xl text-left p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
           >
             Upload
           </button>

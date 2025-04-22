@@ -9,7 +9,7 @@ type CategoryPayload = {
   description?: string;
 };
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   try {
     const { name, description, id }: CategoryPayload = await req.json();
     if (!id)
@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
     if (!category)
       throw new ApiError(StatusCode.BAD_REQUEST, {}, "Category not found");
 
-    if (category?.name != name) {
+    if (category?.name != name && name) {
       category.name = name;
     }
 
-    if (category?.description != description) {
+    if (category?.description != description && description) {
       category.description = description;
     }
 

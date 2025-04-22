@@ -1,24 +1,33 @@
-// "use client";
+"use client";
 import React, { useCallback, useState } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import toast from "react-hot-toast";
 
+export type CustomOrder = {
+  itemImage: string;
+  name: string;
+  description: string;
+  message: string;
+  price: number;
+};
+
 const CreateYourOwn = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
-  // Handle File Upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
+      setFile(file);
       const reader = new FileReader();
       reader.onload = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
   });
@@ -38,52 +47,70 @@ const CreateYourOwn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!imagePreview) {
-      toast.error("Upload a reference first");
+    if (!file) {
+      toast.error("Upload a cake reference image first");
       return;
     }
 
     try {
-      const response = await fetch("/api/upload", {
+      // Get signed URL for the image upload
+      const uploadResponse = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fileName: `upload_${Date.now()}.png`, // you can customize the name/extension
-          fileType: "image/png",
+          fileName: file.name,
+          fileType: file.type,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get presigned URL");
+      if (!uploadResponse.ok) {
+        toast.error("Failed to get upload URL");
+        return;
       }
 
-      const { uploadUrl } = await response.json();
+      const { uploadUrl } = await uploadResponse.json();
 
-      // Convert base64 to Blob
-      const blob = await (await fetch(imagePreview)).blob();
-
-      // Upload the image to the presigned URL
-      const uploadResponse = await fetch(uploadUrl, {
+      // Upload the image to S3
+      await fetch(uploadUrl, {
         method: "PUT",
         headers: {
-          "Content-Type": "image/png",
+          "Content-Type": file.type,
         },
-        body: blob,
+        body: file,
       });
 
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image to S3");
-      }
+      // Get the public image URL
+      const uploadedImageUrl = uploadUrl.split("?")[0];
 
-      const fileUrl = uploadUrl.split("?")[0]; // public URL
+      // 4. Save order in localStorage
+      const customOrder: CustomOrder = {
+        name: formData.cakeName,
+        message: formData.message,
+        description: formData.description,
+        itemImage: uploadedImageUrl,
+        price: 50,
+      };
 
-      console.log("Uploaded image URL:", fileUrl);
-      toast.success("Upload successful!");
+      const existingOrders: CustomOrder[] = JSON.parse(
+        localStorage.getItem("customOrders") || "[]"
+      );
+
+      existingOrders.push(customOrder);
+      localStorage.setItem("customOrders", JSON.stringify(existingOrders));
+
+      toast.success("Custom order saved!");
+
+      //  Reset form and image preview
+      setFormData({
+        cakeName: "",
+        message: "",
+        description: "",
+      });
+      setImagePreview(null);
+      setFile(null);
     } catch (error) {
-      console.error("Upload failed:", error);
-      toast.error("Failed to upload");
+      console.error("Submission error:", error);
+      toast.error("Something went wrong!");
     }
   };
 
@@ -152,7 +179,7 @@ const CreateYourOwn = () => {
                 placeholder="Describe any special requests or design preferences"
                 value={formData.description}
                 onChange={handleChange}
-                className="w-full p-3 border  border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full p-3 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 rows={4}
                 required
               ></textarea>
@@ -160,7 +187,7 @@ const CreateYourOwn = () => {
           </div>
           <button
             type="submit"
-            className="  text-green-500 font-bold text-2xl text-left  p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
+            className="text-green-500 font-bold text-2xl text-left p-2 rounded-md hover:text-green-300 hover:cursor-pointer transition duration-300"
           >
             Submit Order
           </button>

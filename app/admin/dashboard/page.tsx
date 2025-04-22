@@ -1,5 +1,6 @@
 "use client";
 import AdminUploadScreen from "@/app/components/AdminUploadScreen";
+import AdminVideoScreen from "@/app/components/AdminVideoScreen";
 import EditScreen from "@/app/components/EditScreen";
 import NotificationScreen from "@/app/components/NotificationScreen";
 import OffersScreen from "@/app/components/OffersScreen";
@@ -61,6 +62,13 @@ const Page = () => {
           >
             Notifications
           </li>
+
+          <li
+            className="hover:cursor-pointer hover:underline"
+            onClick={() => handleOnClickNav("videos")}
+          >
+            Manage Videos
+          </li>
         </ul>
       </div>
       <div className="col-span-3 bg-gray-900 ml-4 rounded-sm">
@@ -70,6 +78,7 @@ const Page = () => {
         <div>{currentScreen === "settings" && <SettingScreen />}</div>
         <div>{currentScreen === "orders" && <OrderScreen />}</div>
         <div>{currentScreen === "notification" && <NotificationScreen />}</div>
+        <div>{currentScreen === "videos" && <AdminVideoScreen />}</div>
       </div>
     </div>
   );

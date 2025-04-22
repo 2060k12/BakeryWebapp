@@ -16,6 +16,7 @@ import { ProofOfPayment } from "./ProofOfPayment";
 import { Customers } from "./CustomerModel";
 import type { Relation } from "typeorm";
 import { Item } from "./ItemModel";
+import { CustomOrder } from "./CustomOrder";
 
 export enum OrderStatus {
   PENDING = "PENDING",
@@ -67,6 +68,9 @@ export class Orders {
 
   @OneToMany(() => Item, (item) => item.order)
   items!: Relation<Item[]>;
+
+  @OneToMany(() => CustomOrder, (item) => item.order)
+  customOrder!: Relation<CustomOrder[]>;
 
   @ManyToOne(() => Customers)
   customer!: Relation<Customers>;
