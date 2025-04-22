@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Page() {
   return (
     <div>
-      <div className="flex justify-center mx-auto my-16">
+      <div className="flex justify-center md:mx-auto  mx-6 my-16">
         {/*  hero banner with images */}
         <Image
           alt="Image for banner"
@@ -14,7 +14,7 @@ export default function Page() {
         />
         <div className="flex flex-wrap gap-6 my-12 justify-center "></div>
       </div>
-      <div className="grid grid-cols-4 mx-20">
+      <div className="grid grid-cols-4 md:mx-20 mx-4 space-x-3">
         <div className="flex-row ">
           <Image
             alt="Image for banner"
@@ -23,7 +23,9 @@ export default function Page() {
             height={100}
             className="rounded-3xl aspect-square  "
           />
-          <h4 className="flex justify-center text-xl">Anniversery</h4>
+          <h4 className="flex justify-center text-sm md:text-xl">
+            Anniversery
+          </h4>
         </div>
         <div className="flex-row ">
           <Image
@@ -33,7 +35,7 @@ export default function Page() {
             height={100}
             className="rounded-3xl aspect-square  "
           />
-          <h4 className="flex justify-center">Birthday</h4>
+          <h4 className="flex justify-center text-sm md:text-xl">Birthday</h4>
         </div>{" "}
         <div className="flex-row ">
           <Image
@@ -43,7 +45,7 @@ export default function Page() {
             height={100}
             className="rounded-3xl aspect-square  "
           />
-          <h4 className="flex justify-center">Events</h4>
+          <h4 className="flex justify-center text-sm md:text-xl">Events</h4>
         </div>{" "}
         <div className="flex-row ">
           <Image
@@ -53,7 +55,9 @@ export default function Page() {
             height={100}
             className="rounded-3xl aspect-square  "
           />
-          <h4 className="flex justify-center">Baby Shower</h4>
+          <h4 className="flex justify-center text-sm md:text-xl">
+            Baby Shower
+          </h4>
         </div>
       </div>
     </div>

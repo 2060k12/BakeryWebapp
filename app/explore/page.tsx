@@ -2,23 +2,22 @@
 import { useState } from "react";
 import Photos from "../components/Photos";
 import { Videos } from "../components/Videos";
-import SocialMedia from "../components/SocialMedia";
 import CreateYourOwn from "../components/CreateYourOwn";
 
 const Explore = () => {
-  const [isSelected, setIsSelected] = useState("photos"); // Default state should match the initial UI
+  const [isSelected, setIsSelected] = useState("photos");
 
   return (
-    <div className="px-32 py-16">
+    <div className="md:px-32 px-8 py-8 md:py-16">
       {/* The navigation bar inside the explore page */}
-      <nav className="flex space-x-8 text-2xl">
+      <nav className="flex md:space-x-8 space-x-2 md:text-2xl text-lg">
         <button
           className={` hover:cursor-pointer ${
             isSelected === "photos" ? "underline" : ""
           } ${isSelected === "photos" ? "font-bold" : ""}`}
           onClick={() => setIsSelected("photos")}
         >
-          Photos
+          All Items
         </button>
         <button
           className={`hover:cursor-pointer ${
@@ -28,14 +27,7 @@ const Explore = () => {
         >
           Videos
         </button>
-        <button
-          className={` hover:cursor-pointer ${
-            isSelected === "social" ? "underline" : ""
-          } ${isSelected === "social" ? "font-bold" : ""}`}
-          onClick={() => setIsSelected("social")}
-        >
-          Social Media
-        </button>
+
         <button
           className={`hover:cursor-pointer ${
             isSelected === "createYourOwn" ? "underline" : ""
@@ -50,7 +42,6 @@ const Explore = () => {
       <div className="mt-8">
         {isSelected === "photos" && <Photos />}
         {isSelected === "videos" && <Videos />}
-        {isSelected === "social" && <SocialMedia />}
         {isSelected === "createYourOwn" && <CreateYourOwn />}
       </div>
     </div>

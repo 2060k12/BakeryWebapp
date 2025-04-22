@@ -10,7 +10,7 @@ const ToasterProvider = () => {
           padding: "12px",
         },
       }}
-      position="bottom-right"
+      position="top-center"
       reverseOrder={false}
     />
   );

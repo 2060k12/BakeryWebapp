@@ -29,7 +29,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/admin/dashboard.tss"
+    "app/admin/dashboard.tss",
+    "app/api/admin/auth/.route.ts"
   ],
   "exclude": ["node_modules"]
 }
