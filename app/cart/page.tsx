@@ -136,21 +136,40 @@ const Cart = () => {
             {cartItems?.map((item, index) => (
               <div key={item.id}>
                 <EachCartItem order={item} />
-                <button
-                  onClick={() => {
-                    const updatedCartItems = cartItems?.filter(
-                      (_, i) => i !== index
-                    );
-                    setCartItems(updatedCartItems);
-                    localStorage.setItem(
-                      "cartItems",
-                      JSON.stringify(updatedCartItems)
-                    );
-                  }}
-                  className="text-gray-600 text-sm hover:cursor-pointer"
-                >
-                  Remove
-                </button>
+                <div className="flex gap-4 ">
+                  <button
+                    onClick={() => {
+                      const updatedCartItems = cartItems?.filter(
+                        (_, i) => i !== index
+                      );
+                      setCartItems(updatedCartItems);
+                      localStorage.setItem(
+                        "cartItems",
+                        JSON.stringify(updatedCartItems)
+                      );
+                    }}
+                    className="text-gray-600 text-3xl hover:cursor-pointer"
+                  >
+                    -
+                  </button>
+
+                  <h2 className="text-xl p-2"> 1 </h2>
+                  <button
+                    onClick={() => {
+                      const updatedCartItems = cartItems?.filter(
+                        (_, i) => i !== index
+                      );
+                      setCartItems(updatedCartItems);
+                      localStorage.setItem(
+                        "cartItems",
+                        JSON.stringify(updatedCartItems)
+                      );
+                    }}
+                    className="text-gray-600 text-2xl hover:cursor-pointer"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             ))}
 

@@ -11,8 +11,8 @@ const EachCartItem = ({ order }: { order: Item }) => {
         <Image
           className="col-span-1 rounded-xl md:h-25 md:w-25   h-18 w-18"
           src={order.itemImage ? order.itemImage : "/images/cake1.jpg"}
-          height={200}
-          width={200}
+          height={150}
+          width={150}
           alt="Cake"
         />
 

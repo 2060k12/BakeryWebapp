@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Image from "next/image";
 import { useOrderStore } from "@/helpers/store";
 import toast from "react-hot-toast";
+import { useDropzone } from "react-dropzone";
 
 const Checkout = () => {
   const order = useOrderStore((state) => state.order);
@@ -18,8 +19,53 @@ const Checkout = () => {
       identityProof: "",
     }
   );
-  if (!order) return <p className="text-center">No order data found.</p>;
 
+  const [imagePreviewScreenshot, setImagePreviewScreenshot] = useState<
+    string | null
+  >(null);
+  const [file1, setFile1] = useState<File | null>(null);
+
+  const [imagePreviewIdentityProof, setImagePreviewIdentityProof] = useState<
+    string | null
+  >(null);
+  const [file2, setFile2] = useState<File | null>(null);
+
+  // Handle drop for proof screenshot (Proof of Payment)
+  const onDropScreenshot = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setFile1(file);
+      const reader = new FileReader();
+      reader.onload = () => setImagePreviewScreenshot(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  // Handle drop for identity proof
+  const onDropIdentityProof = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setFile2(file);
+      const reader = new FileReader();
+      reader.onload = () =>
+        setImagePreviewIdentityProof(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const { getRootProps: getProofRootProps, getInputProps: getProofInputProps } =
+    useDropzone({
+      onDrop: onDropScreenshot,
+      accept: "image/*",
+    });
+
+  const {
+    getRootProps: getIdentityRootProps,
+    getInputProps: getIdentityInputProps,
+  } = useDropzone({
+    onDrop: onDropIdentityProof,
+    accept: "image/*",
+  });
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -28,20 +74,111 @@ const Checkout = () => {
   };
 
   const handleSubmitOrder = async () => {
+    if (!order) {
+      toast.error("No order data found.");
+      return;
+    }
     if (
       !customer.name ||
       !customer.email ||
       !customer.phoneNumber ||
       !customer.address ||
-      !customer.addressDescription ||
-      !customer.identityProof
+      !customer.addressDescription
     ) {
       toast.error("Please fill in all required fields.");
       return;
     }
+    if (!file1) {
+      toast.error("Upload a proof of payment image first");
+      return;
+    }
+
+    if (!file2) {
+      toast.error("Upload an identity proof image first");
+      return;
+    }
+    try {
+      //  Get signed URL for the image upload
+      const uploadResponseProof = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file1?.name,
+          fileType: file1?.type,
+        }),
+      });
+
+      if (!uploadResponseProof.ok) {
+        toast.error("Failed to get upload URL");
+        return;
+      }
+
+      const { uploadUrlProof } = await uploadResponseProof.json();
+      if (!uploadUrlProof) {
+        toast.error("Failed to retrieve proof upload URL.");
+        return;
+      }
+      // Upload the image to S3
+      await fetch(uploadUrlProof, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file1?.type,
+        },
+        body: file1,
+      });
+      const uploadResponseIdentity = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file2?.name,
+          fileType: file2?.type,
+        }),
+      });
+
+      const { uploadUrlIdentity } = await uploadResponseIdentity.json();
+      if (!uploadUrlIdentity) {
+        toast.error("Failed to retrieve identity upload URL.");
+        return;
+      }
+
+      if (!uploadResponseIdentity.ok) {
+        toast.error("Failed to get upload URL");
+        return;
+      }
+
+      await fetch(uploadUrlIdentity, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file2?.type,
+        },
+        body: file2,
+      });
+
+      // 3. Get the public image URL (remove query params from the signed URL)
+      const uploadedImageUrlProof = uploadUrlProof.split("?")[0];
+      const uploadedImageUrlIdentity = uploadUrlIdentity.split("?")[0];
+
+      if (!uploadedImageUrlProof || !uploadedImageUrlIdentity) {
+        toast.error("Image upload failed");
+        return;
+      }
+
+      order.proofScreenshot = uploadedImageUrlProof;
+      customer.identityProof = uploadedImageUrlIdentity;
+      order.customer = customer;
+      console.log("------------------------------------------------ ");
+      console.log("Order data:", order);
+
+      toast.success("Item added successfully!");
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Something went wrong!");
+    }
     // Here you would typically send the order to your backend
     toast.success("Order submitted successfully!");
   };
+
+  if (!order) return <p className="text-center">No order data found.</p>;
 
   return (
     <div>
@@ -49,7 +186,7 @@ const Checkout = () => {
       <p className="text-center text-gray-600">
         Please review your order details and customer information.
       </p>
-      <div className=" grid grid-cols-2 gap-4 max-w-3xl mx-auto py-8 px-4">
+      <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto py-8 px-4">
         {/* Order Summary */}
         <div className=" ">
           <div className="border-2 rounded-lg shadow p-6 mb-6">
@@ -130,95 +267,59 @@ const Checkout = () => {
                 />
               </div>
 
-              <div>
-                <label className="block font-medium">
-                  Identity Proof (URL)
-                </label>
-                <input
-                  type="text"
-                  name="identityProof"
-                  value={customer.identityProof}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                />
-                {customer.identityProof && (
-                  <Image
-                    src={customer.identityProof}
-                    alt="Identity Proof"
-                    height={200}
-                    width={200}
-                    className="rounded mt-2"
-                  />
-                )}
-              </div>
-
               <button
                 onClick={handleSubmitOrder}
-                className="w-full bg-green-500 p-4 text-xl font-bold text-white rounded hover:bg-green-600 hover:cursor-pointer"
+                className="w-full bg-green-500 p-4 text-xl font-bold text-white rounded hover:bg-green-600"
               >
                 Submit Order
               </button>
             </div>
           </div>
         </div>
-        <div className=" ">
-          {/* Items */}
-          <div className="border-2 rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-2">Items</h2>
-            <ul className="list-disc list-inside space-y-1">
-              {order.items.map((item, index) => (
-                <li key={index}>
-                  Item ID: <span className="font-semibold">{item.id}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          {/* Custom Orders */}
-          <div className="border-2 rounded-lg shadow p-6 mb-6">
-            <h2 className="text-xl font-bold mb-2">Custom Orders</h2>
-            <ul className="space-y-4">
-              {order.customOrders.map((custom, index) => (
-                <li key={index} className="border rounded p-3">
-                  <p className="font-semibold">Name: {custom.name}</p>
-                  <p className="text-sm text-gray-600">
-                    Message: {custom.message}
-                  </p>
-                  <p className="italic text-gray-500">
-                    Order Description: {custom.description}
-                  </p>
-                  <p className="font-bold">Price: ${custom.price}</p>
-                  {custom.itemImage && (
-                    <Image
-                      src={custom.itemImage}
-                      alt={custom.name}
-                      height={100}
-                      width={100}
-                      className="rounded mt-2"
-                    />
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="flex flex-col gap-4">
           {/* Proof of Payment */}
-          {order.proofScreenshot ? (
-            <div className="border-2 rounded-lg shadow p-6 mb-6 text-center">
-              <h2 className="text-xl font-bold mb-2">Proof of Payment</h2>
+          <div className="border-2 rounded-lg shadow p-6 mb-6 text-center">
+            <h2 className="text-xl font-bold mb-2">Proof of Payment</h2>
+            <div
+              {...getProofRootProps()}
+              className="border-dashed border-2 p-4 rounded cursor-pointer"
+            >
+              <input {...getProofInputProps()} />
+              <p>Drag & drop an image here, or click to select a file</p>
+            </div>
+            {imagePreviewScreenshot ? (
               <Image
-                src={order.proofScreenshot}
+                src={imagePreviewScreenshot}
                 alt="Proof of Payment"
                 height={300}
                 width={300}
-                className="rounded mx-auto"
+                className="rounded mx-auto mt-2"
               />
+            ) : (
+              <p>No proof uploaded</p>
+            )}
+          </div>
+
+          <div className="border-2 rounded-lg shadow p-6 mb-6 text-center">
+            <label className="block font-medium">Identity Proof (Upload)</label>
+            <div
+              {...getIdentityRootProps()}
+              className="border-dashed border-2 p-4 rounded cursor-pointer"
+            >
+              <input {...getIdentityInputProps()} />
+              <p>Drag & drop an image here, or click to select a file</p>
             </div>
-          ) : (
-            <div className="border-2 rounded-lg shadow p-6 mb-6 text-center">
-              <h2 className="text-xl font-bold mb-2">No Proof of Payment</h2>
-              <p>Please upload your proof of payment.</p>
-            </div>
-          )}
+            {imagePreviewIdentityProof && (
+              <Image
+                src={imagePreviewIdentityProof}
+                alt="Identity Proof"
+                height={200}
+                width={200}
+                className="rounded mt-2"
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
