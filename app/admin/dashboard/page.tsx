@@ -45,7 +45,7 @@ const Page = () => {
 
       setIsLoading(false);
     }
-  });
+  }, []);
 
   return (
     <>

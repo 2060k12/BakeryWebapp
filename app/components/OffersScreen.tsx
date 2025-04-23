@@ -1,11 +1,9 @@
 "use client";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import BannerDetailView from "./BannerDetailView";
 import axios from "axios";
 import { ApiResponse } from "@/helpers/apiResponse";
 import toast from "react-hot-toast";
-import { Promotion } from "@/db/models/Promotion";
+import { PromoBannerResponse } from "../(root)/page";
 
 interface promotion {
   id: string;
@@ -21,6 +19,29 @@ const OffersScreen = () => {
   const [discount, setDiscount] = useState("");
 
   const baseUrl = process.env.BASE_URL || "";
+
+  const [bannerPromotion, setBannerPromotion] =
+    useState<PromoBannerResponse | null>(null);
+
+  const fetchPromoBanner = async () => {
+    try {
+      const res = await axios.get<ApiResponse<PromoBannerResponse>>(
+        `/api/banner/fetch`
+      );
+      console.log("Promo:", res.data);
+
+      if (res.data.success) {
+        setBannerPromotion(res.data.data);
+        return;
+      } else {
+        console.error("Promo fetch failed:", res.data.message);
+
+        setBannerPromotion(null);
+      }
+    } catch (error) {
+      console.error("No promo:", error);
+    }
+  };
 
   // upload new promotion to database
   const addAewPromotion = async (reqData: {
@@ -54,9 +75,7 @@ const OffersScreen = () => {
   // fetch all current promotions
   const fetchCurrentPromotions = async () => {
     try {
-      const res = await axios.get<ApiResponse<promotion[]>>(
-        `${baseUrl}/api/promo/fetch`
-      );
+      const res = await axios.get<ApiResponse<promotion[]>>(`/api/promo/fetch`);
 
       if (res.status == 200) {
         toast.success("Promo Code fetched");
@@ -72,18 +91,14 @@ const OffersScreen = () => {
   // remove promotion
   const removePromotion = async (promoCode: string) => {
     try {
-      const res = await axios.delete<ApiResponse<object>>(
-        `${baseUrl}/api/promo/delete/`,
-        {
-          params: {
-            promoCode: promoCode,
-          },
-        }
-      );
+      const res = await axios.delete<ApiResponse<object>>(`/api/promo/delete`, {
+        params: {
+          promoCode: promoCode,
+        },
+      });
 
       if (res.status == 200) {
         toast.success("Promo Code deleted");
-        fetchCurrentPromotions();
       } else {
         toast.error("Unable to delete Promo ");
       }
@@ -121,7 +136,45 @@ const OffersScreen = () => {
 
   useEffect(() => {
     fetchCurrentPromotions();
+    fetchPromoBanner();
   }, []);
+
+  async function handleRemoveBannerPromotion() {
+    try {
+      const res = await axios.delete<ApiResponse<object>>(`/api/banner/delete`);
+
+      if (res.data.success) {
+        setBannerPromotion(null);
+        fetchPromoBanner();
+        return;
+      }
+    } catch (error) {
+      console.error("No promo:", error);
+    }
+  }
+
+  async function handleAddToBannerPromotion(promoCode: string) {
+    console.log("Promo Code:", promoCode);
+    try {
+      const res = await axios.post<ApiResponse<object>>(
+        `/api/banner/create`,
+        {},
+        {
+          params: {
+            promoCode: promoCode,
+          },
+        }
+      );
+
+      if (res.status == 200) {
+        toast.success("Promo Code added to banner");
+        fetchPromoBanner();
+        return;
+      }
+    } catch (error) {
+      console.error("No promo:", error);
+    }
+  }
 
   return (
     <>
@@ -177,7 +230,7 @@ const OffersScreen = () => {
 
       <div>
         <h1 className="text-2xl font-bold text-white bg-black p-4">
-          Current Banner Promotion
+          All Coupens
         </h1>
         <div className="grid grid-cols-3">
           {promos?.map((item) => (
@@ -185,6 +238,15 @@ const OffersScreen = () => {
               key={item.id}
               className="border-2 border-black rounded-2xl p-4 m-4 bg-black"
             >
+              <button
+                className="bg-blue-400 mb-4 w-full p-2  hover:cursor-pointer hover:bg-blue-300"
+                onClick={() => {
+                  handleAddToBannerPromotion(item.code);
+                }}
+              >
+                Set as Banner Promotion
+              </button>
+
               <h1 className="text-xl">
                 Code: <span className="underline">{item.code}</span>
               </h1>
@@ -222,6 +284,33 @@ const OffersScreen = () => {
           Add New Promotion
         </button>
       </div>
+
+      {bannerPromotion && (
+        <div className=" m-8 relative border-2 h-48 my-10 p-8 bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ease-in-out">
+          <strong className="text-xl font-extrabold text-white drop-shadow-md">
+            Promotion
+          </strong>
+          <p className="text-xl font-semibold text-white mt-2 drop-shadow-md">
+            {bannerPromotion.discount}% OFF
+          </p>
+          <p className="text-xl font-medium text-white  drop-shadow-md">
+            Use Coupon:{" "}
+            <span className="font-bold text-yellow-400">
+              {bannerPromotion.promoCode}
+            </span>
+            <div>
+              <button
+                onClick={() => {
+                  handleRemoveBannerPromotion();
+                }}
+                className="bg-red-400 w-full p-2 mt-3 rounded-2xl hover:cursor-pointer hover:bg-red-300"
+              >
+                Remove
+              </button>
+            </div>
+          </p>
+        </div>
+      )}
     </>
   );
 };

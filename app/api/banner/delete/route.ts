@@ -1,9 +1,9 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
 import { PromotionBanner } from "@/db/models/PromotionBannerMode";
 import { ApiError, ApiResponse } from "@/helpers/apiResponse";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     await initializeDataSource();
     const promoBannerRepo = AppDataSource.getRepository(PromotionBanner);
