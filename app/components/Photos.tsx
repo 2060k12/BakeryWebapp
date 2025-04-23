@@ -85,7 +85,7 @@ const Photos = () => {
           />
         ))}
       </div>
-      {isModalOpen && (
+      {isModalOpen && selectedItem && (
         <div className="fixed inset-0 flex justify-center items-center w-1/2 h-1/2 m-auto">
           <div className="flex bg-black rounded-4xl max-w-7xl  ">
             <div className="flex justify-between items-center "></div>
@@ -131,13 +131,20 @@ const Photos = () => {
                 </div>
               </div>
               {/* Order Now Button */}
-              <div>
+              <div className="grid grid-cols-2 gap-4 mt-8  ">
+                <button
+                  className="bg-red-500 p-2 w-full hover:cursor-pointer hover:bg-red-600"
+                  onClick={closeModal}
+                >
+                  Back
+                </button>
+
                 <button
                   onClick={() => {
                     handleSubmit();
                     closeModal();
                   }}
-                  className="text-3xl font-bold text-green-500 hover:cursor-pointer "
+                  className=" bg-green-500 p-2 w-full  font-bold  hover:cursor-pointer hover:bg-green-600 "
                 >
                   Add to Cart
                 </button>

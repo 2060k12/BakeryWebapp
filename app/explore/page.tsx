@@ -17,7 +17,7 @@ const Explore = () => {
           } ${isSelected === "photos" ? "font-bold" : ""}`}
           onClick={() => setIsSelected("photos")}
         >
-          All Items
+          Explore
         </button>
         <button
           className={`hover:cursor-pointer ${

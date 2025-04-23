@@ -9,6 +9,9 @@ import toast from "react-hot-toast";
 import EachCustomCartItem from "../components/EachCustomCartItem";
 import { useRouter } from "next/navigation";
 import { useOrderStore } from "@/helpers/store";
+import { nanoid } from "nanoid";
+import { today, getLocalTimeZone } from "@internationalized/date";
+import { DatePicker } from "@heroui/date-picker";
 export interface Customer {
   name: string;
   address: string;
@@ -39,12 +42,14 @@ const Cart = () => {
   const [promoCode, setPromoCode] = React.useState("");
   const [grossPrice, setGrossPrice] = React.useState<number>(0);
   const [deliveryCharge, setDeliveryCharge] = React.useState<number>(5);
+  const [loading, setLoading] = React.useState(true);
   const [cartItems, setCartItems] = React.useState<Item[]>();
   const [customItem, setCustomItems] = React.useState<CustomOrder[]>();
   const [totalCost, setTotalCost] = React.useState<number>(0);
   const getCustomOrders = (): CustomOrder[] => {
     return JSON.parse(localStorage.getItem("customOrders") || "[]");
   };
+  const tomorrow = today(getLocalTimeZone()).add({ days: 1 });
   const router = useRouter();
   const handleCheckPromoCode = async (promo: string) => {
     if (!promo) {
@@ -90,9 +95,9 @@ const Cart = () => {
     const customPrice = customOrders.reduce((acc, item) => acc + item.price, 0);
     const discountAmount = discount ? (totalPrice * discount) / 100 : 0;
     const totalPriceWithDiscount = totalPrice - discountAmount;
-
     setGrossPrice(totalPrice + customPrice);
     setTotalCost(totalPriceWithDiscount + customPrice + deliveryCharge);
+    setLoading(false);
   }, [cartItems, customItem, deliveryCharge, discount]);
 
   const createOrder: Order = {
@@ -112,162 +117,180 @@ const Cart = () => {
     },
     items: cartItems || [],
     customOrders: customItem || [],
+    orderName: nanoid().slice(0, 8),
   };
 
   return (
-    <div>
-      <div className="md:grid md:grid-cols-6 gap-16 mx-4 md:mx-0">
-        {/* Producs */}
-        {/* Product 1 */}
-        <div className="col-span-4 ">
-          {/* Shopping card heaging */}
-          <div className="mb-8">
-            <div className="flex justify-between text-xl font-bold ">
-              <h2 className="text-left">Shopping Cart</h2>
-              <h2 className="text-right">
-                {cartItems?.length || 0 + (customItem?.length || 0)} Items
-              </h2>
+    <>
+      {loading ? (
+        <div className="fixed inset-0 flex items-center justify-center  z-50 h-full">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid" />
+        </div>
+      ) : (
+        <div>
+          <div className="md:grid md:grid-cols-6 gap-16 mx-4 md:mx-0">
+            {/* Producs */}
+            {/* Product 1 */}
+            <div className="col-span-4 ">
+              {/* Shopping card heaging */}
+              <div className="mb-8">
+                <div className="flex justify-between text-xl font-bold ">
+                  <h2 className="text-left">Shopping Cart</h2>
+                  <h2 className="text-right">
+                    {cartItems?.length || 0 + (customItem?.length || 0)} Items
+                  </h2>
+                </div>
+                <hr className="border-gray-300 mt-4 " />
+              </div>
+
+              {/* Products*/}
+              <div className="flex-row space-y-4 ">
+                {cartItems?.map((item, index) => (
+                  <div key={item.id}>
+                    <EachCartItem order={item} />
+                    <div className="flex gap-4 ">
+                      <button
+                        onClick={() => {
+                          const updatedCartItems = cartItems?.filter(
+                            (_, i) => i !== index
+                          );
+                          setCartItems(updatedCartItems);
+                          localStorage.setItem(
+                            "cartItems",
+                            JSON.stringify(updatedCartItems)
+                          );
+                        }}
+                        className="text-gray-600 text-3xl hover:cursor-pointer"
+                      >
+                        -
+                      </button>
+
+                      <h2 className="text-xl p-2"> 1 </h2>
+                      <button
+                        onClick={() => {
+                          const updatedCartItems = cartItems?.filter(
+                            (_, i) => i !== index
+                          );
+                          setCartItems(updatedCartItems);
+                          localStorage.setItem(
+                            "cartItems",
+                            JSON.stringify(updatedCartItems)
+                          );
+                        }}
+                        className="text-gray-600 text-2xl hover:cursor-pointer"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {customItem?.map((item, index) => (
+                  <div key={index}>
+                    <EachCustomCartItem order={item} />
+                    <button
+                      onClick={() => {
+                        const updatedCustomOrders = customItem?.filter(
+                          (_, i) => i !== index
+                        );
+                        setCustomItems(updatedCustomOrders);
+
+                        localStorage.setItem(
+                          "customOrders",
+                          JSON.stringify(updatedCustomOrders)
+                        );
+                      }}
+                      className="text-gray-600 text-sm hover:cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-            <hr className="border-gray-300 mt-4 " />
-          </div>
 
-          {/* Products*/}
-          <div className="flex-row space-y-4 ">
-            {cartItems?.map((item, index) => (
-              <div key={item.id}>
-                <EachCartItem order={item} />
-                <div className="flex gap-4 ">
-                  <button
-                    onClick={() => {
-                      const updatedCartItems = cartItems?.filter(
-                        (_, i) => i !== index
-                      );
-                      setCartItems(updatedCartItems);
-                      localStorage.setItem(
-                        "cartItems",
-                        JSON.stringify(updatedCartItems)
-                      );
-                    }}
-                    className="text-gray-600 text-3xl hover:cursor-pointer"
-                  >
-                    -
-                  </button>
+            {/* Order summary */}
 
-                  <h2 className="text-xl p-2"> 1 </h2>
-                  <button
-                    onClick={() => {
-                      const updatedCartItems = cartItems?.filter(
-                        (_, i) => i !== index
-                      );
-                      setCartItems(updatedCartItems);
-                      localStorage.setItem(
-                        "cartItems",
-                        JSON.stringify(updatedCartItems)
-                      );
-                    }}
-                    className="text-gray-600 text-2xl hover:cursor-pointer"
-                  >
-                    +
-                  </button>
+            <div className="md:col-span-2 mt-8 md:mt:0 w-full">
+              <div className="mb-4">
+                {/* Header */}
+                <div className="mb-8">
+                  <h1 className="text-xl font-bold">Order Summary</h1>
+
+                  <hr className=" border-gray-300 mt-4" />
+                </div>
+                <div className="flex justify-between">
+                  <h3>
+                    Items - {cartItems?.length || 0 + (customItem?.length || 0)}
+                  </h3>
+                  <h3>${grossPrice.toFixed(2)}</h3>
                 </div>
               </div>
-            ))}
+              <h3>Shipping</h3>
+              <DatePicker
+                defaultValue={tomorrow}
+                className="max-w-[284px] "
+                minValue={tomorrow}
+                onChange={(date) => {
+                  if (date) {
+                    createOrder.deliveryDate = date.toString();
+                  }
+                }}
+                label="Delivery Date"
+              />
+              <button className="w-full text-left bg-green-600 p-2 text-white text-lg rounded-sm mb-4">
+                Standard Delivery - ${deliveryCharge}
+              </button>
 
-            {customItem?.map((item, index) => (
-              <div key={index}>
-                <EachCustomCartItem order={item} />
+              {/* promo code */}
+              <h3>Promo Code</h3>
+              <p className="text-sm text-gray-500 mb-2">
+                Enter your promo code if you have one
+              </p>
+              <div className="flex justify-between gap-2">
+                <input
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  type="text"
+                  placeholder="Enter your code"
+                  className="py-2 px-4 rounded-sm border-2 w-full"
+                />
+
                 <button
                   onClick={() => {
-                    const updatedCustomOrders = customItem?.filter(
-                      (_, i) => i !== index
-                    );
-                    setCustomItems(updatedCustomOrders);
-
-                    localStorage.setItem(
-                      "customOrders",
-                      JSON.stringify(updatedCustomOrders)
-                    );
+                    setDiscount(0);
+                    handleCheckPromoCode(promoCode);
                   }}
-                  className="text-gray-600 text-sm hover:cursor-pointer"
+                  className="bg-green-600 text-white py-2 px-4 rounded-sm"
                 >
-                  Remove
+                  Apply
                 </button>
               </div>
-            ))}
+              <p className="text-sm text-gray-500 mb-2">
+                Total discount : {discount ? discount : 0}%
+              </p>
+              <hr className="border-gray-300 my-4 " />
+              <div className="flex-row ">
+                <div className="flex justify-between ">
+                  <h3 className="font-bold">TOTAL COST</h3>
+                  <h3>$ {totalCost}</h3>
+                </div>
+
+                <button
+                  onClick={() => {
+                    useOrderStore.getState().setOrder(createOrder);
+                    router.push("/checkout");
+                  }}
+                  className="mt-3 w-full bg-blue-600 text-xl border-2 text-white p-4 rounded-sm hover:cursor-pointer hover:bg-blue-500 hover:border-blue-500"
+                >
+                  CHECKOUT
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Order summary */}
-
-        <div className="md:col-span-2 mt-8 md:mt:0 w-full">
-          <div className="mb-4">
-            {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-xl font-bold">Order Sumary</h1>
-              <hr className=" border-gray-300 mt-4" />
-            </div>
-            <div className="flex justify-between">
-              <h3>
-                Items - {cartItems?.length || 0 + (customItem?.length || 0)}
-              </h3>
-              <h3>${grossPrice.toFixed(2)}</h3>
-            </div>
-          </div>
-
-          <h3>Shipping</h3>
-          <button className="w-full text-left bg-green-600 p-2 text-white text-lg rounded-sm mb-4">
-            Standard Delivery - ${deliveryCharge}
-          </button>
-
-          {/* promo code */}
-          <h3>Promo Code</h3>
-          <p className="text-sm text-gray-500 mb-2">
-            Enter your promo code if you have one
-          </p>
-          <div className="flex justify-between gap-2">
-            <input
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value)}
-              type="text"
-              placeholder="Enter your code"
-              className="py-2 px-4 rounded-sm border-2 w-full"
-            />
-
-            <button
-              onClick={() => {
-                setDiscount(0);
-                handleCheckPromoCode(promoCode);
-              }}
-              className="bg-green-600 text-white py-2 px-4 rounded-sm"
-            >
-              Apply
-            </button>
-          </div>
-
-          <p className="text-sm text-gray-500 mb-2">
-            Total discount : {discount ? discount : 0}%
-          </p>
-          <hr className="border-gray-300 my-4 " />
-
-          <div className="flex-row ">
-            <div className="flex justify-between ">
-              <h3 className="font-bold">TOTAL COST</h3>
-              <h3>$ {totalCost}</h3>
-            </div>
-
-            <button
-              onClick={() => {
-                useOrderStore.getState().setOrder(createOrder);
-                router.push("/checkout");
-              }}
-              className="mt-3 w-full bg-blue-600 text-xl border-2 text-white p-4 rounded-sm hover:cursor-pointer hover:bg-blue-500 hover:border-blue-500"
-            >
-              CHECKOUT
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

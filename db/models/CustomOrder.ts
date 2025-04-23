@@ -29,13 +29,6 @@ export class CustomOrder {
   @Column({ nullable: true })
   itemImage?: string;
 
-  @Column({
-    type: "enum",
-    enum: DietaryOption,
-    nullable: true,
-  })
-  dietaryOption?: DietaryOption;
-
   @Column()
   price!: number;
 
