@@ -5,7 +5,8 @@ import NavBar from "./components/NavBar";
 import ToasterProvider from "./components/Toaster";
 import Footer from "./components/Footer";
 import "dotenv/config";
-import { Toaster } from "react-hot-toast";
+import "leaflet/dist/leaflet.css";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

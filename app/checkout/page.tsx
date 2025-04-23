@@ -171,7 +171,7 @@ const Checkout = () => {
         console.error("Error saving order:", error);
         toast.error("Failed to save order data.");
       }
-
+      clearCart();
       toast.success("Order submitted successfully!");
     } catch (error) {
       console.error("Submission error:", error);
@@ -181,6 +181,11 @@ const Checkout = () => {
     }
     // Here you would typically send the order to your backend
     toast.success("Order submitted successfully!");
+  };
+
+  const clearCart = () => {
+    localStorage.removeItem("customOrders");
+    localStorage.removeItem("cartItems");
   };
 
   if (!order) return <p className="text-center">No order data found.</p>;

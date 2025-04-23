@@ -12,6 +12,7 @@ import { Promotion } from "./models/Promotion";
 import { Admin } from "./models/AdminModel";
 import { VideoModel } from "./models/VideoModel";
 import { CustomOrder } from "./models/CustomOrder";
+import { PromotionBanner } from "./models/PromotionBannerMode";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -33,6 +34,7 @@ export const AppDataSource = new DataSource({
     OrderItem,
     VideoModel,
     CustomOrder,
+    PromotionBanner,
   ],
   synchronize: process.env.NODE_ENV === "production" ? false : true,
   ssl: { rejectUnauthorized: false },

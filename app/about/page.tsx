@@ -31,7 +31,6 @@ export default function Page() {
         `${baseUrl}/api/about/fetchDetails`
       );
       setBusiness(response.data.data);
-      console.log("-------------------------------");
       console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -59,6 +58,10 @@ export default function Page() {
           <div className="md:px-44 px-8 pt-18 pb-8">
             <h1 className="font-bold text-3xl">About Us</h1>
             <p>{business?.description}</p>
+
+            <h2 className="font-bold text-3xl pt-8">Business Hours</h2>
+            <p> Opening Time: {business?.openingTime}</p>
+            <p>Closing Time: {business?.closingTime}</p>
           </div>
           <Image
             src={business?.imageUrl ? business?.imageUrl : "/images/banner.jpg"}
@@ -103,6 +106,21 @@ export default function Page() {
               </div>
             </div>
           </div>
+          {business?.address && (
+            <div className="md:px-44 px-8 pb-8">
+              <h3 className="font-bold text-3xl pb-4">Find Us on the Map</h3>
+              <div className="w-full h-[400px]">
+                <iframe
+                  className="w-full h-full rounded-md border"
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(
+                    business.address
+                  )}&output=embed`}
+                  loading="lazy"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>

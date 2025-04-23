@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import { Item } from "./Photos";
+import { Item } from "./Explore";
 
 interface PhotoViewProps {
   imageAlt: string;

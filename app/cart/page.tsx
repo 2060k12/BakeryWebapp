@@ -133,7 +133,7 @@ const Cart = () => {
             {/* Product 1 */}
             <div className="col-span-4 ">
               {/* Shopping card heaging */}
-              <div className="mb-8">
+              <div className="my-8">
                 <div className="flex justify-between text-xl font-bold ">
                   <h2 className="text-left">Shopping Cart</h2>
                   <h2 className="text-right">
@@ -142,6 +142,16 @@ const Cart = () => {
                 </div>
                 <hr className="border-gray-300 mt-4 " />
               </div>
+
+              {/* Empty cart */}
+              {cartItems?.length === 0 && customItem?.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-64">
+                  <h2 className="text-2xl font-bold">Your cart is empty</h2>
+                  <p className="text-gray-500">
+                    Add items to your cart to see them here.
+                  </p>
+                </div>
+              )}
 
               {/* Products*/}
               <div className="flex-row space-y-4 ">
@@ -278,6 +288,10 @@ const Cart = () => {
 
                 <button
                   onClick={() => {
+                    if (cartItems?.length === 0 && customItem?.length === 0) {
+                      toast.error("Please add items to the cart");
+                      return;
+                    }
                     useOrderStore.getState().setOrder(createOrder);
                     router.push("/checkout");
                   }}

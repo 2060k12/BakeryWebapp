@@ -18,7 +18,7 @@ export interface Item {
   createdAt?: string;
   updatedAt?: string;
 }
-const Photos = () => {
+const ExploreScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
@@ -69,7 +69,7 @@ const Photos = () => {
   }, []);
 
   return (
-    <div className="xl:px-16 lg:px-16 md:px-8 px-2 py-4 md:py-16">
+    <div className="xl:px-16 lg:px-16 md:px-8 px-2 py-8 md:py-4">
       {/* This is the explore page Feed */}
 
       <div className="flex flex-wrap gap-6 my-2 md:my-12 justify-center ">
@@ -157,4 +157,4 @@ const Photos = () => {
   );
 };
 
-export default Photos;
+export default ExploreScreen;
