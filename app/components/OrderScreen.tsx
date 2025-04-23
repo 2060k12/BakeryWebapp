@@ -23,11 +23,10 @@ const OrderScreen = () => {
   const [openPreviousOrders, setOpenPreviousOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderPayload | null>(null);
   const [orders, setOrders] = useState<OrderPayload[] | null>(null);
-  const baseUrl = process.env.BASE_URL || "";
   const handleFetchAllOrders = async () => {
     try {
       const response = await axios.get<ApiResponse<OrderPayload[]>>(
-        `${baseUrl}/api/orders/fetch`
+        `/api/orders/fetch`
       );
 
       setOrders(response.data.data);
@@ -38,6 +37,7 @@ const OrderScreen = () => {
 
   useEffect(() => {
     handleFetchAllOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

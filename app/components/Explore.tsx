@@ -35,12 +35,9 @@ const ExploreScreen = () => {
     setSelectedItem(null);
   };
 
-  const baseUrl = process.env.BASE_URL || "";
   const fetchAllItems = async () => {
     try {
-      const res = await axios.get<ApiResponse<Item[]>>(
-        `${baseUrl}/api/items/fetchAll`
-      );
+      const res = await axios.get<ApiResponse<Item[]>>(`/api/items/fetchAll`);
       setItems(res.data.data);
     } catch (error) {
       toast.error("Something went wrong, " + error);
@@ -74,6 +71,7 @@ const ExploreScreen = () => {
 
   useEffect(() => {
     fetchAllItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

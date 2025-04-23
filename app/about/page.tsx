@@ -25,10 +25,10 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const fetchData = async () => {
     setIsLoading(true);
-    const baseUrl = process.env.BASE_URL || "";
+
     try {
       const response = await axios.get<ApiResponse<BusinessPayload>>(
-        `${baseUrl}/api/about/fetchDetails`
+        `/api/about/fetchDetails`
       );
       setBusiness(response.data.data);
       console.log(response.data.data);

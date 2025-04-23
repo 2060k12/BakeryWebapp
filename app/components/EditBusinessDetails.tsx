@@ -49,7 +49,7 @@ export interface BusinessPayload {
 export default function BusinessEditor() {
   const [business, setBusiness] = useState<Partial<BusinessPayload>>({});
   const [loading, setLoading] = useState(false);
-  const [editingSocialMedia, setEditingSocialMedia] = useState(false);
+
   const [newSocialMediaLink, setNewSocialMediaLink] = useState<{
     platform: keyof SocialMediaLinks | "";
     url: string;
@@ -130,7 +130,8 @@ export default function BusinessEditor() {
         },
       }));
       setNewSocialMediaLink({ platform: "", url: "" });
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       toast.error("Failed to add social media link", {
         position: "top-center",
         icon: "❌",
@@ -163,6 +164,7 @@ export default function BusinessEditor() {
         icon: "✅",
       });
       setBusiness((prev) => ({ ...prev, socialMediaLinks: updatedLinks }));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast.error("Failed to remove social media link", {
         position: "top-center",
@@ -191,6 +193,7 @@ export default function BusinessEditor() {
           icon: "✅",
         }
       );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast.error(
         `Failed to update ${fields.find((f) => f.key === key)?.label}`,
@@ -212,34 +215,39 @@ export default function BusinessEditor() {
             Edit Business Information
           </h2>
           <div className="space-y-6">
-            {fields.map(({ label, key }) => (
-              <div key={key}>
-                <label
-                  htmlFor={key}
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  {label}
-                </label>
-                <input
-                  type="text"
-                  id={key}
-                  value={business[key as keyof BusinessPayload] || ""}
-                  onChange={(e) =>
-                    handleChange(key as keyof BusinessPayload, e.target.value)
-                  }
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-                <button
-                  onClick={() => handleSubmit(key as keyof BusinessPayload)}
-                  disabled={loading}
-                  className={`mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
-                    loading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {loading ? "Updating..." : `Update ${label}`}
-                </button>
-              </div>
-            ))}
+            {fields.map(({ label, key }) => {
+              const value = business[key as keyof BusinessPayload];
+              if (typeof value !== "string" && typeof value !== "undefined")
+                return null; // Skip non-string values
+              return (
+                <div key={key}>
+                  <label
+                    htmlFor={key}
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    {label}
+                  </label>
+                  <input
+                    type="text"
+                    id={key}
+                    value={value || ""}
+                    onChange={(e) =>
+                      handleChange(key as keyof BusinessPayload, e.target.value)
+                    }
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                  <button
+                    onClick={() => handleSubmit(key as keyof BusinessPayload)}
+                    disabled={loading}
+                    className={`mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+                      loading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    {loading ? "Updating..." : `Update ${label}`}
+                  </button>
+                </div>
+              );
+            })}
 
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">

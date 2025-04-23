@@ -4,7 +4,6 @@ import { ApiResponse } from "@/helpers/apiResponse";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { IoFilter } from "react-icons/io5";
 import PhotoView from "../components/PhotoView";
 import Image from "next/image";
 
@@ -99,10 +98,9 @@ const Search = () => {
   // Fetchs all categories from the database
   const handleFetchAllCategories = async () => {
     setIsLoading(true);
-    const baseUrl = process.env.BASE_URL || "";
     try {
       const response = await axios.get<ApiResponse<CategoriesPayload[]>>(
-        `${baseUrl}/api/category/fetchAllCategory`
+        `/api/category/fetchAllCategory`
       );
       setCategories(response.data.data);
     } catch (error) {
@@ -120,10 +118,9 @@ const Search = () => {
   const handleFetchAllItemsFromOneCategory = async (id: string) => {
     setIsLoading(true);
     setSearchedItems(null);
-    const baseUrl = process.env.BASE_URL || "";
     try {
       const response = await axios.get<ApiResponse<{ items: Item[] }>>(
-        `${baseUrl}/api/category/fetchItems`,
+        `/api/category/fetchItems`,
         {
           params: {
             id,

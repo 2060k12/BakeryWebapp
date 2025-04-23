@@ -58,13 +58,12 @@ const ViewMoreDetailScreen = ({
 }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [orderDetail, setOrderDetail] = useState<Order | null>(null);
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
   const [showStatusOptions, setShowStatusOptions] = useState(false);
   // Fetch all order details
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get<ApiResponse<Order>>(
-        `${baseUrl}/api/orders/fetchDetail`,
+        `/api/orders/fetchDetail`,
         {
           params: {
             id: order.id,
@@ -87,7 +86,7 @@ const ViewMoreDetailScreen = ({
         toast.error(newStatus + "empty");
       }
       const res = await axios.put<ApiResponse<OrderPayload>>(
-        `${baseUrl}/api/orders/updateStatus`,
+        `/api/orders/updateStatus`,
         {},
         {
           params: {
@@ -111,6 +110,7 @@ const ViewMoreDetailScreen = ({
 
   useEffect(() => {
     fetchOrderDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!orderDetail) return <p className="p-4">Loading order details...</p>;
@@ -341,28 +341,26 @@ const ViewMoreDetailScreen = ({
           )}
         </div>
       </div>
-      
       {orderDetail.customer?.address && (
         <div className="w-full px-8 pt-8">
           <h3 className="font-bold text-3xl pb-4">Delivery Address</h3>
           <p>{orderDetail.customer.address}</p>
           <p>{orderDetail.customer.addressDescription}</p>
-          </div>
-      )}
-        <div className="w-full px-8 pb-8">
-          <h3 className="font-bold text-3xl pb-4">Delivery Address</h3>
-          <div className="w-full h-[400px]">
-            <iframe
-              className="w-full h-full rounded-md border"
-              src={`https://www.google.com/maps?q=${encodeURIComponent(
-                orderDetail.customer.address
-              )}&output=embed`}
-              loading="lazy"
-              allowFullScreen
-            ></iframe>
-          </div>
         </div>
       )}
+      <div className="w-full px-8 pb-8">
+        <h3 className="font-bold text-3xl pb-4">Delivery Address</h3>
+        <div className="w-full h-[400px]">
+          <iframe
+            className="w-full h-full rounded-md border"
+            src={`https://www.google.com/maps?q=${encodeURIComponent(
+              orderDetail.customer.address
+            )}&output=embed`}
+            loading="lazy"
+            allowFullScreen
+          ></iframe>
+        </div>
+      </div>
     </div>
   );
 };

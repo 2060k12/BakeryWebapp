@@ -75,10 +75,9 @@ const EditScreen = () => {
 
   // Fetchs all categories from the database
   const handleFetchAllCategories = async () => {
-    const baseUrl = process.env.BASE_URL || "";
     try {
       const response = await axios.get<ApiResponse<CategoriesPayload[]>>(
-        `${baseUrl}/api/category/fetchAllCategory`
+        `/api/category/fetchAllCategory`
       );
       setCategories(response.data.data);
     } catch (error) {

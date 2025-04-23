@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
 
     // Verify the token
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       jwt.verify(token, process.env.ACCESSTOKEN || "", (err, decoded) => {
         if (err) {
           throw new ApiError(
@@ -19,6 +20,7 @@ export async function GET(req: NextRequest) {
           );
         }
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new ApiError(
         StatusCode.BAD_REQUEST,

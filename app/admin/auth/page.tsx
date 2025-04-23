@@ -9,10 +9,10 @@ const Page = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (email === "" || password === "") {
       toast.error("Please fill in all fields");
       return;
     }
@@ -53,7 +53,7 @@ const Page = () => {
   return (
     <div className="m-16">
       <form
-        action="post"
+        onSubmit={handleLogin}
         className="border-black border-2 p-12 w-2/5 flex-col m-auto rounded-xl "
       >
         {isLoading && (
@@ -87,7 +87,6 @@ const Page = () => {
         </div>
 
         <button
-          onClick={handleLogin}
           type="submit"
           className="bg-green-400 py-3 text-2xl font-bold text-white w-full rounded-sm hover:cursor-pointer hover:bg-green-300 "
         >
