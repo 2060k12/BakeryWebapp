@@ -4,6 +4,7 @@ import { AppDataSource, initializeDataSource } from "@/db/config";
 import { Admin } from "@/db/models/AdminModel";
 import { ApiError, ApiResponse, StatusCode } from "@/helpers/apiResponse";
 import jwt from "jsonwebtoken";
+import toast from "react-hot-toast";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     let token;
     try {
       token = jwt.sign({ id: existing.id }, process.env.ACCESSTOKEN || "", {
-        expiresIn: "1d",
+        expiresIn: "1h",
       });
     } catch (error) {
       throw new ApiError(
@@ -48,11 +49,13 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     if (error instanceof ApiError) {
-      return NextResponse.json(error);
+      toast.error(error.message);
+      return NextResponse.json(error, { status: error.statusCode });
     } else {
+      toast.error("Something went wrong");
       return NextResponse.json(
-        new ApiError(400, error, "Something went Wrong"),
-        { status: 400 }
+        new ApiError(500, error, "Something went Wrong"),
+        { status: 500 }
       );
     }
   }

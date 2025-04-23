@@ -1,65 +1,105 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import { Videos } from "../components/Videos";
+import CreateYourOwn from "../components/CreateYourOwn";
+import ExploreScreen from "../components/Explore";
+import axios from "axios";
+import { ApiResponse } from "@/helpers/apiResponse";
 
-export default function Page() {
+interface PromoBannerResponse {
+  promoCode: string;
+  discount: number;
+}
+
+const Page = () => {
+  const [isSelected, setIsSelected] = useState("photos");
+  const [promotion, setPromotion] = useState<PromoBannerResponse | null>(null);
+
+  const fetchPromo = async () => {
+    try {
+      const res = await axios.get<ApiResponse<PromoBannerResponse>>(
+        `/api/banner/fetch`
+      );
+      console.log("Promo:", res.data);
+
+      if (res.data.success) {
+        setPromotion(res.data.data);
+        return;
+      } else {
+        console.error("Promo fetch failed:", res.data.message);
+
+        setPromotion(null);
+      }
+    } catch (error) {
+      console.error("No promo:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPromo();
+  }, []);
+
   return (
-    <div>
-      <div className="flex justify-center md:mx-auto  mx-6 my-16">
-        {/*  hero banner with images */}
-        <Image
-          alt="Image for banner"
-          src={"/images/ad1.jpg"}
-          width={768}
-          height={400}
-          className="rounded-3xl aspect-video "
-        />
-        <div className="flex flex-wrap gap-6 my-12 justify-center "></div>
-      </div>
-      <div className="grid grid-cols-4 md:mx-20 mx-4 space-x-3">
-        <div className="flex-row ">
-          <Image
-            alt="Image for banner"
-            src={"/images/cake6.jpg"}
-            width={200}
-            height={100}
-            className="rounded-3xl aspect-square  "
-          />
-          <h4 className="flex justify-center text-sm md:text-xl">
-            Anniversery
-          </h4>
+    <div className="md:px-32 px-8 py-8 md:py-4">
+      {/* ads banner */}
+      {promotion && (
+        <div className="relative border-2 h-48 my-10 p-8 bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ease-in-out">
+          <strong className="text-4xl font-extrabold text-white drop-shadow-md">
+            Promotion
+          </strong>
+          <p className="text-3xl font-semibold text-white mt-4 drop-shadow-md">
+            {promotion.discount}% OFF
+          </p>
+          <p className="text-xl font-medium text-white mt-2 drop-shadow-md">
+            Use Coupon:{" "}
+            <span className="font-bold text-yellow-400">
+              {promotion.promoCode}
+            </span>
+          </p>
+
+          {/* Limited Time Badge */}
+          <div className="absolute top-4 right-4 bg-yellow-400 text-blue-700 rounded-full px-4 py-2 text-sm font-bold shadow-md">
+            Limited Time
+          </div>
         </div>
-        <div className="flex-row ">
-          <Image
-            alt="Image for banner"
-            src={"/images/cake4.jpg"}
-            width={200}
-            height={100}
-            className="rounded-3xl aspect-square  "
-          />
-          <h4 className="flex justify-center text-sm md:text-xl">Birthday</h4>
-        </div>{" "}
-        <div className="flex-row ">
-          <Image
-            alt="Image for banner"
-            src={"/images/cake2.jpg"}
-            width={200}
-            height={100}
-            className="rounded-3xl aspect-square  "
-          />
-          <h4 className="flex justify-center text-sm md:text-xl">Events</h4>
-        </div>{" "}
-        <div className="flex-row ">
-          <Image
-            alt="Image for banner"
-            src={"/images/cake7.jpg"}
-            width={200}
-            height={100}
-            className="rounded-3xl aspect-square  "
-          />
-          <h4 className="flex justify-center text-sm md:text-xl">
-            Baby Shower
-          </h4>
-        </div>
+      )}
+
+      {/* The navigation bar inside the explore page */}
+      <nav className="flex md:space-x-8 space-x-2 md:text-2xl text-lg">
+        <button
+          className={` hover:cursor-pointer ${
+            isSelected === "photos" ? "underline" : ""
+          } ${isSelected === "photos" ? "font-bold" : ""}`}
+          onClick={() => setIsSelected("photos")}
+        >
+          Explore
+        </button>
+        <button
+          className={`hover:cursor-pointer ${
+            isSelected === "videos" ? "underline" : ""
+          } ${isSelected === "videos" ? "font-bold" : ""}`}
+          onClick={() => setIsSelected("videos")}
+        >
+          Videos
+        </button>
+
+        <button
+          className={`hover:cursor-pointer ${
+            isSelected === "createYourOwn" ? "underline" : ""
+          } ${isSelected === "createYourOwn" ? "font-bold" : ""} `}
+          onClick={() => setIsSelected("createYourOwn")}
+        >
+          Create Your Own
+        </button>
+      </nav>
+      {/* Conditional Rendering */}
+      <div>
+        {isSelected === "photos" && <ExploreScreen />}
+        {isSelected === "videos" && <Videos />}
+        {isSelected === "createYourOwn" && <CreateYourOwn />}
       </div>
     </div>
   );
-}
+};
+
+export default Page;

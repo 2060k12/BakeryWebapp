@@ -115,7 +115,7 @@ const CreateYourOwn = () => {
   };
 
   return (
-    <div className="grid grid-cols-4">
+    <div className="grid grid-cols-4 mt-10">
       {/* Cake Reference Section */}
       <section className="flex flex-col col-span-2">
         <div

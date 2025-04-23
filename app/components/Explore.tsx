@@ -18,7 +18,7 @@ export interface Item {
   createdAt?: string;
   updatedAt?: string;
 }
-const Photos = () => {
+const ExploreScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
@@ -69,7 +69,7 @@ const Photos = () => {
   }, []);
 
   return (
-    <div className="xl:px-16 lg:px-16 md:px-8 px-2 py-4 md:py-16">
+    <div className="xl:px-16 lg:px-16 md:px-8 px-2 py-8 md:py-4">
       {/* This is the explore page Feed */}
 
       <div className="flex flex-wrap gap-6 my-2 md:my-12 justify-center ">
@@ -85,7 +85,7 @@ const Photos = () => {
           />
         ))}
       </div>
-      {isModalOpen && (
+      {isModalOpen && selectedItem && (
         <div className="fixed inset-0 flex justify-center items-center w-1/2 h-1/2 m-auto">
           <div className="flex bg-black rounded-4xl max-w-7xl  ">
             <div className="flex justify-between items-center "></div>
@@ -131,13 +131,20 @@ const Photos = () => {
                 </div>
               </div>
               {/* Order Now Button */}
-              <div>
+              <div className="grid grid-cols-2 gap-4 mt-8  ">
+                <button
+                  className="bg-red-500 p-2 w-full hover:cursor-pointer hover:bg-red-600"
+                  onClick={closeModal}
+                >
+                  Back
+                </button>
+
                 <button
                   onClick={() => {
                     handleSubmit();
                     closeModal();
                   }}
-                  className="text-3xl font-bold text-green-500 hover:cursor-pointer "
+                  className=" bg-green-500 p-2 w-full  font-bold  hover:cursor-pointer hover:bg-green-600 "
                 >
                   Add to Cart
                 </button>
@@ -150,4 +157,4 @@ const Photos = () => {
   );
 };
 
-export default Photos;
+export default ExploreScreen;

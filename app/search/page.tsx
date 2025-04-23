@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { IoFilter } from "react-icons/io5";
 import PhotoView from "../components/PhotoView";
+import Image from "next/image";
 
 export interface CategoriesPayload {
   id: string;
@@ -24,15 +25,65 @@ export interface Item {
   avaivable: boolean;
 }
 const Search = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [categories, setCategories] = useState<CategoriesPayload[] | null>(
     null
   );
+  const openModal = (imageSrc: string) => {
+    setSelectedImage(imageSrc);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage("");
+    setSelectedItem(null);
+  };
+
+  const handleSubmit = async () => {
+    const order = selectedItem;
+
+    // Get existing orders from localStorage, or initialize as empty array
+    const existingOrders: Item[] = JSON.parse(
+      localStorage.getItem("cartItems") || "[]"
+    );
+
+    // Add the new order to the array
+    existingOrders.push(order as Item);
+
+    // Save the updated array back to localStorage
+    localStorage.setItem("cartItems", JSON.stringify(existingOrders));
+
+    toast.success("Added to cart!");
+  };
 
   const [currentCategoryId, setCurrentCategoryId] = useState("");
   const [currentCategoryItems, setCurrentCategoryItems] = useState<
     Item[] | null
   >(null);
+  const [searchedItems, setSearchedItems] = useState<Item[] | null>(null);
+  const handleSearch = async (name: string) => {
+    try {
+      const response = await axios.get<ApiResponse<{ existingItems: Item[] }>>(
+        `/api/items/search`,
+        {
+          params: {
+            name,
+          },
+        }
+      );
+      if (response.data.data?.existingItems) {
+        setSearchedItems(response.data.data.existingItems);
+      } else {
+        setCurrentCategoryItems([]); // fallback to empty array if no items
+      }
+    } catch (error) {
+      toast.error("Not found");
+    }
+  };
 
   // Fetchs all categories from the database
   const handleFetchAllCategories = async () => {
@@ -109,8 +160,40 @@ const Search = () => {
           className="border p-2 rounded-2xl w-full  px-4 py-4 text-xl "
           placeholder="Search Here"
         />
-        {/* Filter Icon */}
-        <IoFilter className="md:text-5xl text-3xl text" />
+        {/* search button */}
+        <button
+          onClick={() => {
+            handleSearch(inputValue);
+          }}
+          className="bg-blue-500 text-white rounded-2xl px-6 py-4 hover:bg-blue-400 hover:cursor-pointer"
+        >
+          Search
+        </button>
+      </div>
+
+      <div className="  mx-2 mt-4">
+        {searchedItems ? (
+          <div>
+            <h1 className="font-bold text-2xl">Searched Results</h1>
+            <div className="flex gap-5 mt-4">
+              {searchedItems?.map((item) => (
+                <PhotoView
+                  item={item}
+                  key={item.id}
+                  imageAlt=""
+                  onClick={() => {
+                    setSelectedItem(item);
+                    openModal(
+                      item.itemImage ? item.itemImage : "/images/cake1.jpg"
+                    );
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </div>
 
       <div>
@@ -144,12 +227,86 @@ const Search = () => {
                 item={item}
                 key={item.id}
                 imageAlt=""
-                onClick={() => {}}
+                onClick={() => {
+                  setSelectedItem(item);
+                  openModal(
+                    item.itemImage ? item.itemImage : "/images/cake1.jpg"
+                  );
+                }}
               />
             ))}
           </div>
         )}
       </div>
+
+      {isModalOpen && selectedItem && (
+        <div className="fixed inset-0 flex justify-center items-center w-1/2 h-1/2 m-auto">
+          <div className="flex bg-black rounded-4xl max-w-7xl  ">
+            <div className="flex justify-between items-center "></div>
+            <Image
+              className="rounded-4xl"
+              src={selectedImage}
+              alt="Selected"
+              width={350}
+              height={400}
+            />
+
+            {/* description  section */}
+            <div className=" grid grid-row-2 px-10 py-8 mt-2 content-between">
+              <div>
+                {/* Titile and close button */}
+                <div className="grid grid-cols-6 content-between ">
+                  <h4 className=" font-bold text-3xl col-span-4 ">
+                    {selectedItem?.name}
+                  </h4>
+
+                  <div className="flex justify-end col-span-2">
+                    <button
+                      onClick={closeModal}
+                      className=" text-2xl font-bold text-black hover:cursor-pointer "
+                    >
+                      X
+                    </button>
+                  </div>
+                </div>
+                {/* Diatery Options */}
+
+                <div className="mt-8">
+                  <h4 className="font-bold"> Dietary Option: </h4>
+                  <h4 className="font-bold">
+                    {" "}
+                    {selectedItem?.dietaryOption
+                      ? selectedItem.dietaryOption
+                      : "N/A"}{" "}
+                  </h4>
+                  <hr className="my-5" />
+                  <h4 className="font-bold"> {selectedItem?.description}</h4>
+                  <h4 className="font-bold">Price: ${selectedItem?.price}</h4>
+                </div>
+              </div>
+              {/* Order Now Button */}
+              <div className="grid grid-cols-2 gap-4 mt-8  ">
+                <button
+                  className="bg-red-500 p-2 w-full hover:cursor-pointer hover:bg-red-600"
+                  onClick={closeModal}
+                >
+                  Back
+                </button>
+
+                <button
+                  onClick={() => {
+                    handleSubmit();
+                    closeModal();
+                  }}
+                  className=" bg-green-500 p-2 w-full  font-bold  hover:cursor-pointer hover:bg-green-600 "
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

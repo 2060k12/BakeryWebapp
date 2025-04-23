@@ -52,7 +52,6 @@ const NavBar = () => {
       >
         <NavItem href="/" label="Home" />
         <NavItem href="/about" label="About" />
-        <NavItem href="/explore" label="Explore" />
         <NavItem href="/search" label="Search" />
         <NavItems href="/cart" label="">
           <button className=" flex justify-between place-items-center cursor-pointerborder-2 md:border-0 hover:cursor-pointer hover:text-white border-gray-700 hover:bg-green-500 border-2 m-1 p-1  ">

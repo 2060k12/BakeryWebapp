@@ -6,6 +6,7 @@ import { ApiResponse } from "@/helpers/apiResponse";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { DietaryOption } from "@/db/models/ItemModel";
+import { CustomOrder } from "@/db/models/CustomOrder";
 
 export interface ProofOfPayment {
   id?: string;
@@ -44,6 +45,7 @@ export interface Order {
   deletedAt: string | null;
   proofOfPayment?: ProofOfPayment;
   items?: Item[];
+  customOrder?: CustomOrder[];
   customer: Customer;
 }
 
@@ -125,7 +127,9 @@ const ViewMoreDetailScreen = ({
               >
                 ✕
               </button>
-              <img
+              <Image
+                width={1000}
+                height={1000}
                 src={selectedImage}
                 alt="Large preview"
                 className="max-w-full max-h-screen rounded shadow-lg"
@@ -259,10 +263,14 @@ const ViewMoreDetailScreen = ({
               >
                 <h3 className="text-lg font-bold mb-2">{item.name}</h3>
                 {item.itemImage && (
-                  <img
+                  <Image
+                    onClick={() =>
+                      handleImageClick(item.itemImage || "/images/cake1.jpg")
+                    }
                     src={item.itemImage}
                     alt={item.name}
                     width="150"
+                    height={150}
                     className="rounded mb-2"
                   />
                 )}
@@ -280,6 +288,51 @@ const ViewMoreDetailScreen = ({
                 </p>
                 <p>
                   <strong>Available:</strong> {item.avaivable ? "Yes" : "No"}
+                </p>
+              </div>
+            ))
+          ) : (
+            <div>
+              <p>No items found.</p>
+            </div>
+          )}
+        </div>
+
+        <h2 className="text-xl font-semibold border-b pb-2 mb-4">
+          Custom Items
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {orderDetail.customOrder && orderDetail.customOrder.length > 0 ? (
+            orderDetail.customOrder.map((item) => (
+              <div
+                key={item.id}
+                className="border rounded-lg p-4 shadow hover:shadow-md transition"
+              >
+                <h3 className="text-lg font-bold mb-2">{item.name}</h3>
+                {item.itemImage && (
+                  <Image
+                    onClick={() =>
+                      handleImageClick(item.itemImage || "/images/cake1.jpg")
+                    }
+                    src={item.itemImage}
+                    alt={item.name}
+                    width="150"
+                    height="150"
+                    className="rounded mb-2"
+                  />
+                )}
+                <p>
+                  <strong>Name:</strong> {item.name}
+                </p>
+                <p>
+                  <strong>Description:</strong> {item.description}
+                </p>
+                <p>
+                  <strong>Price:</strong> ${item.price}
+                </p>
+
+                <p>
+                  <strong>Message:</strong> {item.message || "None"}
                 </p>
               </div>
             ))

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     // search
     const existingOrder = await orderRepo.findOne({
       where: { id },
-      relations: ["customer", "proofOfPayment", "items"],
+      relations: ["customer", "proofOfPayment", "items", "customOrder"],
     });
 
     if (!existingOrder)

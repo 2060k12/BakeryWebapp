@@ -11,34 +11,43 @@ export const Videos = () => {
 
   // Function to fetch all videos
   const fetchAllVideos = async () => {
-    const response = await axios.get<ApiResponse<VideoModel[]>>(
-      "/api/video/fetchAll",
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+    try {
+      const response = await axios.get<ApiResponse<VideoModel[]>>(
+        "/api/video/fetchAll",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setVideos(response.data.data);
+      } else {
+        toast.error("Unable to fetch videos. Please try again later.", {
+          duration: 3000,
+        });
+        setVideos(null);
       }
-    );
-    if (response.status === 200) {
-      setVideos(response.data.data);
-    } else {
-      toast.error("Unable to fetch videos. Please try again later.", {
-        duration: 3000,
-      });
+
+      // ✅ Hold the loading screen for an extra 1.5 seconds
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    } catch (error) {
+      toast.error("Something went wrong while fetching videos.");
       setVideos(null);
+    } finally {
+      setIsLoading(false);
     }
   };
-
   useEffect(() => {
     fetchAllVideos();
-    setIsLoading(false);
   }, []);
 
   return (
-    <div>
+    <div className="mt-10">
       {isLoading ? (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          <p>Loading videos...</p>
+        <div className="fixed inset-0 flex items-center justify-center  z-50 h-full">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid" />
         </div>
       ) : (
         <>

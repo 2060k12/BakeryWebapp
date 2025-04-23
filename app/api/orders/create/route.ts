@@ -1,5 +1,6 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
 import { Customers } from "@/db/models/CustomerModel";
+import { CustomOrder } from "@/db/models/CustomOrder";
 import { Item } from "@/db/models/ItemModel";
 import { Orders, OrderStatus } from "@/db/models/OrderModel";
 import { ProofOfPayment } from "@/db/models/ProofOfPayment";
@@ -15,6 +16,7 @@ interface createOrderPayload {
   proofScreenshot: string;
   customer: Customer;
   items: Items[];
+  customOrders: CustomOrder[];
 }
 
 interface Customer {
@@ -35,6 +37,7 @@ export async function POST(req: NextRequest) {
     const orderPayload: createOrderPayload = await req.json();
     const items: Items[] = orderPayload.items;
     const customer: Customer = orderPayload.customer;
+    const customOrders: CustomOrder[] = orderPayload.customOrders;
 
     await initializeDataSource();
     if (
@@ -60,7 +63,7 @@ export async function POST(req: NextRequest) {
         "Customer details not complete"
       );
 
-    if (items.length <= 0)
+    if (items.length === 0 && customOrders.length === 0)
       throw new ApiError(
         StatusCode.BAD_REQUEST,
         {},
@@ -74,24 +77,43 @@ export async function POST(req: NextRequest) {
         "Delivery date and Payment proof is mandiatory."
       );
 
-    const itemRepo = AppDataSource.getRepository(Item);
+    let savedItems;
     const itemIds = items.map((item) => item.id);
+    if (itemIds.length > 0) {
+      const itemRepo = AppDataSource.getRepository(Item);
+      const itemIds = items.map((item) => item.id);
 
-    const existingItems = await itemRepo.find({
-      where: {
-        id: In(itemIds),
-      },
-    });
+      const existingItems = await itemRepo.find({
+        where: {
+          id: In(itemIds),
+        },
+      });
 
-    if (existingItems.length !== items.length) {
-      throw new ApiError(
-        StatusCode.BAD_REQUEST,
-        {},
-        "One or more items in the cart do not exist."
-      );
+      if (existingItems.length !== items.length) {
+        throw new ApiError(
+          StatusCode.BAD_REQUEST,
+          {},
+          "One or more items in the cart do not exist."
+        );
+      }
+
+      savedItems = await itemRepo.save(existingItems);
     }
 
-    const savedItems = await itemRepo.save(existingItems);
+    const savedCustomOrders: CustomOrder[] = [];
+    await Promise.all(
+      customOrders.map(async (customOrder) => {
+        const customOrderRepo = AppDataSource.getRepository(CustomOrder);
+        const newCustomOrder = customOrderRepo.create({
+          name: customOrder.name,
+          message: customOrder.message,
+          description: customOrder.description,
+          itemImage: customOrder.itemImage,
+          price: customOrder.price,
+        });
+        savedCustomOrders.push(await customOrderRepo.save(newCustomOrder));
+      })
+    );
 
     // add customer details in database
     const customerRepo = AppDataSource.getRepository(Customers);
@@ -122,6 +144,7 @@ export async function POST(req: NextRequest) {
       proofOfPayment: savedProof,
       status: OrderStatus.PENDING,
       items: savedItems,
+      customOrder: savedCustomOrders,
       discount: orderPayload.discount,
       customer: savedCustomer,
     });
