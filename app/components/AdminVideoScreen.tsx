@@ -58,6 +58,7 @@ const AdminVideoScreen = () => {
         }
       })
       .catch((error) => {
+        console.error("Error deleting video:", error);
         toast.error("Error deleting video. Please try again.", {
           duration: 3000,
         });
@@ -96,12 +97,12 @@ const AdminVideoScreen = () => {
           videos.map((video) => (
             <div
               key={video.id}
-              className="flex flex-row justify-between items-center border-1 p-4 rounded-2xl"
+              className="md:flex md:flex-row justify-between items-center border-1 p-4 rounded-2xl overflow-clip"
             >
               <p>{video.videoUrl}</p>
               <button
                 onClick={() => handleDeleteVideo(video.id)}
-                className="py-2 px-4 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition duration-200 ease-in-out"
+                className="md:mt-0 mt-4 py-2 px-4 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition duration-200 ease-in-out"
               >
                 Delete
               </button>

@@ -53,7 +53,7 @@ const OrderScreen = () => {
         )}
         {/* Each Pending Orders */}
         <h2 className="text-xl">Pending Orders</h2>
-        <div className="grid grid-cols-2 gap-x-3 space-y-4">
+        <div className="grid md:grid-cols-2 gap-x-3 space-y-4">
           {orders
             ?.filter((item) => item.status === OrderStatus.PENDING)
             .map((each) => (
@@ -91,7 +91,7 @@ const OrderScreen = () => {
 
         {/* On Going orders */}
         <h2 className="text-xl my-4">On-going Orders</h2>
-        <div className="grid grid-cols-2 gap-x-3 space-y-4">
+        <div className="grid md:grid-cols-2 gap-x-3 space-y-4">
           {orders
             ?.filter((item) => item.status === OrderStatus.ONGOING)
             .map((each) => (

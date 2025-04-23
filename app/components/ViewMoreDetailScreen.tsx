@@ -337,10 +337,32 @@ const ViewMoreDetailScreen = ({
               </div>
             ))
           ) : (
-            <p>No items found.</p>
+            <p>No Custom Orders found.</p>
           )}
         </div>
       </div>
+      
+      {orderDetail.customer?.address && (
+        <div className="w-full px-8 pt-8">
+          <h3 className="font-bold text-3xl pb-4">Delivery Address</h3>
+          <p>{orderDetail.customer.address}</p>
+          <p>{orderDetail.customer.addressDescription}</p>
+          </div>
+      )}
+        <div className="w-full px-8 pb-8">
+          <h3 className="font-bold text-3xl pb-4">Delivery Address</h3>
+          <div className="w-full h-[400px]">
+            <iframe
+              className="w-full h-full rounded-md border"
+              src={`https://www.google.com/maps?q=${encodeURIComponent(
+                orderDetail.customer.address
+              )}&output=embed`}
+              loading="lazy"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

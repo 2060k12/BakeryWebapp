@@ -55,6 +55,14 @@ const ExploreScreen = () => {
       localStorage.getItem("cartItems") || "[]"
     );
 
+    const isAlreadyInCart = existingOrders.some(
+      (item) => item.id === order?.id
+    );
+    if (isAlreadyInCart) {
+      toast.error("Same item already in cart");
+      return;
+    }
+
     // Add the new order to the array
     existingOrders.push(order as Item);
 
@@ -86,54 +94,57 @@ const ExploreScreen = () => {
         ))}
       </div>
       {isModalOpen && selectedItem && (
-        <div className="fixed inset-0 flex justify-center items-center w-1/2 h-1/2 m-auto">
-          <div className="flex bg-black rounded-4xl max-w-7xl  ">
-            <div className="flex justify-between items-center "></div>
+        <div className="fixed inset-0 flex justify-center items-center m-auto overflow-y-auto max-h-screen">
+          <div className="flex flex-col md:flex-row bg-black rounded-4xl max-w-7xl w-11/12 md:w-auto">
             <Image
-              className="rounded-4xl"
+              className="
+              aspect-squarerounded-t-4xl md:rounded-l-4xl md:rounded-tr-none w-full md:w-auto max-h-96 md:max-h-none object-cover"
               src={selectedImage}
               alt="Selected"
-              width={350}
+              width={400}
               height={400}
             />
 
             {/* description  section */}
-            <div className=" grid grid-row-2 px-10 py-8 mt-2 content-between">
+            <div className="grid grid-rows-2  px-6 py-6 md:px-10 md:py-8 mt-2 md:mt-0 content-between text-white">
               <div>
-                {/* Titile and close button */}
-                <div className="grid grid-cols-6 content-between ">
-                  <h4 className=" font-bold text-3xl col-span-4 ">
+                {/* Title and close button */}
+                <div className="flex justify-between items-start">
+                  <h4 className="font-bold text-2xl md:text-3xl">
                     {selectedItem?.name}
                   </h4>
-
-                  <div className="flex justify-end col-span-2">
-                    <button
-                      onClick={closeModal}
-                      className=" text-2xl font-bold text-black hover:cursor-pointer "
-                    >
-                      X
-                    </button>
-                  </div>
+                  <button
+                    onClick={closeModal}
+                    className="text-xl md:text-2xl font-bold text-gray-400 hover:text-gray-300 hover:cursor-pointer"
+                  >
+                    X
+                  </button>
                 </div>
-                {/* Diatery Options */}
+                {/* Dietary Options */}
 
-                <div className="mt-8">
-                  <h4 className="font-bold"> Dietary Option: </h4>
-                  <h4 className="font-bold">
+                <div className="mt-4 md:mt-8">
+                  <h4 className="font-semibold text-md md:text-lg">
                     {" "}
+                    Dietary Option:{" "}
+                  </h4>
+                  <h4 className="font-semibold text-md md:text-lg">
                     {selectedItem?.dietaryOption
                       ? selectedItem.dietaryOption
-                      : "N/A"}{" "}
+                      : "N/A"}
                   </h4>
-                  <hr className="my-5" />
-                  <h4 className="font-bold"> {selectedItem?.description}</h4>
-                  <h4 className="font-bold">Price: ${selectedItem?.price}</h4>
+                  <hr className="my-3 md:my-5 border-gray-700" />
+                  <h4 className="font-semibold text-md md:text-lg">
+                    {selectedItem?.description}
+                  </h4>
+                  <h4 className="font-bold text-lg md:text-xl mt-2">
+                    Price: ${selectedItem?.price}
+                  </h4>
                 </div>
               </div>
               {/* Order Now Button */}
-              <div className="grid grid-cols-2 gap-4 mt-8  ">
+              <div className="flex justify-between  md:gap-4 mt-4 md:mt-8 h-16">
                 <button
-                  className="bg-red-500 p-2 w-full hover:cursor-pointer hover:bg-red-600"
+                  className="bg-red-500  w-1/2  text-white p-2 rounded-md font-semibold hover:cursor-pointer hover:bg-red-600 transition duration-200 **min-h-[40px]**"
                   onClick={closeModal}
                 >
                   Back
@@ -144,7 +155,7 @@ const ExploreScreen = () => {
                     handleSubmit();
                     closeModal();
                   }}
-                  className=" bg-green-500 p-2 w-full  font-bold  hover:cursor-pointer hover:bg-green-600 "
+                  className="bg-green-500  w-1/2  text-white p-2 rounded-md font-bold hover:cursor-pointer hover:bg-green-600 transition duration-200 **min-h-[40px]**"
                 >
                   Add to Cart
                 </button>

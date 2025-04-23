@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { ApiResponse } from "@/helpers/apiResponse";
 import { CategoriesPayload } from "../search/page";
+import Image from "next/image";
 
 enum DietaryOption {
   VEGAN = "VEGAN",
@@ -163,7 +164,7 @@ const AdminUploadScreen = () => {
   };
 
   return (
-    <div className="grid grid-cols-4 m-8 gap-6">
+    <div className="grid md:grid-cols-4 m-8 gap-6">
       {/* Upload Section */}
       <section className="flex flex-col col-span-2">
         <div
@@ -172,7 +173,9 @@ const AdminUploadScreen = () => {
         >
           <input {...getInputProps()} />
           {imagePreview ? (
-            <img
+            <Image
+              width={400}
+              height={400}
               src={imagePreview}
               alt="Cake Reference"
               className="w-full h-full object-cover rounded-xl"

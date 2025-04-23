@@ -45,7 +45,7 @@ const Page = () => {
 
       setIsLoading(false);
     }
-  });
+  }, []);
 
   return (
     <>
@@ -55,7 +55,7 @@ const Page = () => {
         </div>
       ) : (
         <div className="grid grid-cols-4 ">
-          <div className="flex flex-col bg-black text-white font-bold text-xl col-span-1 py-8 px-4 rounded-sm ">
+          <div className="flex flex-col bg-black text-white font-bold md:text-xl text-lg col-span-1 py-8 px-4 rounded-sm ">
             <ul className="p-4 space-y-4  ">
               <li
                 className="hover:cursor-pointer hover:underline"

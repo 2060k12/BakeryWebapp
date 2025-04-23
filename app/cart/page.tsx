@@ -102,7 +102,7 @@ const Cart = () => {
 
   const createOrder: Order = {
     appliedPromo: promoCode,
-    deliveryDate: new Date().toISOString(),
+    deliveryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     deliveryCharge: deliveryCharge || 0,
     discount: discount || 0,
     GrossPrice: grossPrice,
@@ -170,26 +170,9 @@ const Cart = () => {
                             JSON.stringify(updatedCartItems)
                           );
                         }}
-                        className="text-gray-600 text-3xl hover:cursor-pointer"
+                        className="text-gray-600 text-lg hover:cursor-pointer"
                       >
-                        -
-                      </button>
-
-                      <h2 className="text-xl p-2"> 1 </h2>
-                      <button
-                        onClick={() => {
-                          const updatedCartItems = cartItems?.filter(
-                            (_, i) => i !== index
-                          );
-                          setCartItems(updatedCartItems);
-                          localStorage.setItem(
-                            "cartItems",
-                            JSON.stringify(updatedCartItems)
-                          );
-                        }}
-                        className="text-gray-600 text-2xl hover:cursor-pointer"
-                      >
-                        +
+                        Remove
                       </button>
                     </div>
                   </div>
