@@ -78,7 +78,6 @@ const OffersScreen = () => {
       const res = await axios.get<ApiResponse<promotion[]>>(`/api/promo/fetch`);
 
       if (res.status == 200) {
-        toast.success("Promo Code fetched");
         setPromos(res.data.data);
       } else {
         toast.error("Unable to add Promo ");
@@ -286,29 +285,32 @@ const OffersScreen = () => {
       </div>
 
       {bannerPromotion && (
-        <div className=" m-8 relative border-2 h-48 my-10 p-8 bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ease-in-out">
-          <strong className="text-xl font-extrabold text-white drop-shadow-md">
-            Promotion
-          </strong>
-          <p className="text-xl font-semibold text-white mt-2 drop-shadow-md">
-            {bannerPromotion.discount}% OFF
-          </p>
-          <p className="text-xl font-medium text-white  drop-shadow-md">
-            Use Coupon:{" "}
-            <span className="font-bold text-yellow-400">
-              {bannerPromotion.promoCode}
-            </span>
-            <div>
-              <button
-                onClick={() => {
-                  handleRemoveBannerPromotion();
-                }}
-                className="bg-red-400 w-full p-2 mt-3 rounded-2xl hover:cursor-pointer hover:bg-red-300"
-              >
-                Remove
-              </button>
-            </div>
-          </p>
+        <div className="border-2 p-4 flex w-full justify-between">
+          <div>
+            <strong className="text-xl font-extrabold text-white drop-shadow-md">
+              Promotion
+            </strong>
+            <p className="text-xl font-semibold text-white mt-2 drop-shadow-md">
+              {bannerPromotion.discount}% OFF
+            </p>
+            <p className="text-xl font-medium text-white  drop-shadow-md">
+              Use Coupon:{" "}
+              <span className="font-bold text-yellow-400">
+                {bannerPromotion.promoCode}
+              </span>
+            </p>
+          </div>
+
+          <div>
+            <button
+              onClick={() => {
+                handleRemoveBannerPromotion();
+              }}
+              className="bg-red-400  h-full w-full p-2  rounded-2xl hover:cursor-pointer hover:bg-red-300"
+            >
+              Remove
+            </button>
+          </div>
         </div>
       )}
     </>

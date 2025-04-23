@@ -55,6 +55,14 @@ const ExploreScreen = () => {
       localStorage.getItem("cartItems") || "[]"
     );
 
+    const isAlreadyInCart = existingOrders.some(
+      (item) => item.id === order?.id
+    );
+    if (isAlreadyInCart) {
+      toast.error("Same item already in cart");
+      return;
+    }
+
     // Add the new order to the array
     existingOrders.push(order as Item);
 
