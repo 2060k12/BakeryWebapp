@@ -53,8 +53,11 @@ const NavBar = () => {
         <NavItem href="/" label="Home" />
         <NavItem href="/about" label="About" />
         <NavItem href="/search" label="Search" />
+        <div className=" md:hidden w-full flex flex-col items-center justify-center">
+          <NavItem href="/cart" label="Cart" />
+        </div>
         <NavItems href="/cart" label="">
-          <button className=" flex justify-between place-items-center cursor-pointerborder-2 md:border-0 hover:cursor-pointer hover:text-white border-gray-700 hover:bg-green-500 border-2 m-1 p-1  ">
+          <button className=" hidden md:block flex justify-between place-items-center cursor-pointerborder-2 md:border-0 hover:cursor-pointer hover:text-white border-gray-700 hover:bg-green-500 border-2 m-1 p-1  ">
             <IoMdCart className="  m-1 text-3xl " />
             <h4 className="md:hidden text-xl ">Cart</h4>
           </button>

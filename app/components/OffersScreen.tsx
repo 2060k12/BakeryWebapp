@@ -178,9 +178,11 @@ const OffersScreen = () => {
   return (
     <>
       {openAddPromotion && (
-        <div className=" bg-black w-full grid  grid-cols-7 ">
+        <div className=" bg-black w-full grid  md:grid-cols-7 ">
           <div className="flex  flex-col space-y-4 col-span-6">
-            <h1 className="text-2xl font-bold mb-3">New Promotion</h1>
+            <h1 className="md:text-2xl text-lg font-bold mb-3">
+              New Promotion
+            </h1>
             <input
               className="border border-gray-400  w-9/10 text-xl py-2 px-4 rounded-2xl"
               type="text"
@@ -217,7 +219,7 @@ const OffersScreen = () => {
           </div>
 
           <div
-            className="h-full bg-red-400 my-4 rounded-2xl col-span-1 p-4 m-auto flex items-center justify-center hover:bg-red-300 hover:cursor-pointer"
+            className="md:h-full  bg-red-400 my-4 rounded-2xl col-span-1 p-4 m-auto flex items-center justify-center hover:bg-red-300 hover:cursor-pointer"
             onClick={() => {
               setOpenAddPromotion(false);
             }}
@@ -228,10 +230,10 @@ const OffersScreen = () => {
       )}
 
       <div>
-        <h1 className="text-2xl font-bold text-white bg-black p-4">
+        <h1 className="md:text-2xl text-lg font-bold text-white bg-black p-4">
           All Coupens
         </h1>
-        <div className="grid grid-cols-3">
+        <div className="grid md:grid-cols-3">
           {promos?.map((item) => (
             <div
               key={item.id}
@@ -278,7 +280,7 @@ const OffersScreen = () => {
           onClick={() => {
             setOpenAddPromotion(true);
           }}
-          className="text-2xl font-bold text-white bg-green-400 w-10/11 py-4 m-8 rounded-xl hover:cursor-pointer"
+          className="md:text-2xl text-xl font-bold text-white bg-green-400 w-10/11 py-4 md:m-8 m-3 rounded-xl hover:cursor-pointer"
         >
           Add New Promotion
         </button>

@@ -56,17 +56,17 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        <div className="md:px-32 px-8 py-8 md:py-4">
+        <div className="md:px-32 px-8 py-4">
           {/* ads banner */}
           {promotion && (
-            <div className="relative border-2 h-48 my-10 p-8 bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ease-in-out">
-              <strong className="text-4xl font-extrabold text-white drop-shadow-md">
+            <div className="relative border-2  md:h-40 h-30 md:my-10 my-4 py-3 px-4 bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ease-in-out">
+              <strong className="md:text-4xl text-2xl font-extrabold text-white drop-shadow-md">
                 Promotion
               </strong>
-              <p className="text-3xl font-semibold text-white mt-4 drop-shadow-md">
+              <p className="md:text-3xl text-xl font-semibold text-white md:mt-4  mt-0 drop-shadow-md">
                 {promotion.discount}% OFF
               </p>
-              <p className="text-xl font-medium text-white mt-2 drop-shadow-md">
+              <p className="text-lg md:xl font-medium text-white md:mt-2 mt-0 drop-shadow-md">
                 Use Coupon:{" "}
                 <span className="font-bold text-yellow-400">
                   {promotion.promoCode}
@@ -81,7 +81,7 @@ const Page = () => {
           )}
 
           {/* The navigation bar inside the explore page */}
-          <nav className="flex md:space-x-8 space-x-2 md:text-2xl text-lg">
+          <nav className="flex md:space-x-8 space-x-8 md:text-2xl text-xl ">
             <button
               className={` hover:cursor-pointer ${
                 isSelected === "photos" ? "underline" : ""
@@ -105,7 +105,7 @@ const Page = () => {
               } ${isSelected === "createYourOwn" ? "font-bold" : ""} `}
               onClick={() => setIsSelected("createYourOwn")}
             >
-              Create Your Own
+              Customize
             </button>
           </nav>
           {/* Conditional Rendering */}

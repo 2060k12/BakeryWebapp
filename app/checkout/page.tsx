@@ -163,16 +163,16 @@ const Checkout = () => {
             identityProof: uploadedImageUrlIdentity,
           },
         });
-        if (response.status === 200) {
-          console.log("Order saved successfully:", response.data);
-          toast.success("Order saved successfully!");
+
+        if (!response.data.success) {
+          toast.error("Failed to save order data.");
+          return;
         }
       } catch (error) {
         console.error("Error saving order:", error);
         toast.error("Failed to save order data.");
       }
       clearCart();
-      toast.success("Order submitted successfully!");
     } catch (error) {
       console.error("Submission error:", error);
       toast.error("Something went wrong!");
@@ -202,7 +202,7 @@ const Checkout = () => {
           <p className="text-center text-gray-600">
             Please review your order details and customer information.
           </p>
-          <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto py-8 px-4">
+          <div className="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto py-8 px-4">
             {/* Order Summary */}
             <div className=" ">
               <div className="border-2 rounded-lg shadow p-6 mb-6">
