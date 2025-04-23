@@ -33,6 +33,8 @@ const Page = () => {
       }
     } catch (error) {
       console.error("No promo:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
