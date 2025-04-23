@@ -29,6 +29,7 @@ const AdminVideoScreen = () => {
           duration: 3000,
         });
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Error uploading video. Please try again.", {
         duration: 3000,

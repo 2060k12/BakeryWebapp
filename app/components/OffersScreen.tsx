@@ -18,8 +18,6 @@ const OffersScreen = () => {
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState("");
 
-  const baseUrl = process.env.BASE_URL || "";
-
   const [bannerPromotion, setBannerPromotion] =
     useState<PromoBannerResponse | null>(null);
 
@@ -50,7 +48,7 @@ const OffersScreen = () => {
   }) => {
     try {
       const res = await axios.post<ApiResponse<object>>(
-        `${baseUrl}/api/promo/create`,
+        `/api/promo/create`,
 
         {},
         {
@@ -112,15 +110,12 @@ const OffersScreen = () => {
     discount: string
   ) => {
     try {
-      const res = await axios.patch<ApiResponse<object>>(
-        `${baseUrl}/api/promo/update/`,
-        {
-          params: {
-            promoCode: promoCode,
-            discount: discount,
-          },
-        }
-      );
+      const res = await axios.patch<ApiResponse<object>>(`/api/promo/update/`, {
+        params: {
+          promoCode: promoCode,
+          discount: discount,
+        },
+      });
 
       if (res.status == 200) {
         toast.success("Promo Code updated");

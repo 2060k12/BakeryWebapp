@@ -1,13 +1,9 @@
 import { AppDataSource, initializeDataSource } from "@/db/config";
-import { Promotion } from "@/db/models/Promotion";
 import { PromotionBanner } from "@/db/models/PromotionBannerMode";
 import { ApiError, ApiResponse } from "@/helpers/apiResponse";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const promoCode = searchParams.get("promoCode");
-
+export async function GET() {
   try {
     await initializeDataSource();
     const promoBannerRepo = AppDataSource.getRepository(PromotionBanner);

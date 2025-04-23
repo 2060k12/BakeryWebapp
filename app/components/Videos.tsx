@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TikTokEmbed from "./EachViewComponents";
 import { ApiResponse } from "@/helpers/apiResponse";
 import { VideoModel } from "@/db/models/VideoModel";
@@ -32,6 +32,7 @@ export const Videos = () => {
 
       // ✅ Hold the loading screen for an extra 1.5 seconds
       await new Promise((resolve) => setTimeout(resolve, 1500));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Something went wrong while fetching videos.");
       setVideos(null);

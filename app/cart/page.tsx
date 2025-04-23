@@ -83,6 +83,7 @@ const Cart = () => {
   };
 
   useEffect(() => {
+    setDeliveryCharge(5);
     setCartItems(getCartItems());
     setCustomItems(getCustomOrders());
   }, []);

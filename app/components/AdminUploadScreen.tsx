@@ -29,14 +29,12 @@ const AdminUploadScreen = () => {
     price: "",
   });
 
-  const baseUrl = process.env.BASE_URL || "";
-
   // Fetch categories on mount
   useEffect(() => {
     const handleFetchAllCategories = async () => {
       try {
         const response = await axios.get<ApiResponse<CategoriesPayload[]>>(
-          `${baseUrl}/api/category/fetchAllCategory`
+          `/api/category/fetchAllCategory`
         );
         setCategories(response.data.data);
       } catch (error) {
@@ -49,6 +47,7 @@ const AdminUploadScreen = () => {
     };
 
     handleFetchAllCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Image upload

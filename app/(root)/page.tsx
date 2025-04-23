@@ -47,19 +47,9 @@ const Page = () => {
       {loading ? (
         <div className="flex items-center justify-center h-screen">
           <div className=" rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid" />
-
-          <div className="fixed inset-0 flex items-center justify-center  z-50 h-full">
-            <h1 className="text-4xl font-bold text-center mt-8">
-              Explore Our Offerings
-            </h1>
-            <p className="text-lg text-gray-600 mt-4">
-              Discover a world of flavors and creativity!
-            </p>
-          </div>
         </div>
       ) : (
         <div className="md:px-32 px-8 py-4">
-          {/* ads banner */}
           {promotion && (
             <div className="relative border-2  md:h-40 h-30 md:my-10 my-4 py-3 px-4 bg-gradient-to-r from-blue-600 via-purple-500 to-green-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 ease-in-out">
               <strong className="md:text-4xl text-2xl font-extrabold text-white drop-shadow-md">
